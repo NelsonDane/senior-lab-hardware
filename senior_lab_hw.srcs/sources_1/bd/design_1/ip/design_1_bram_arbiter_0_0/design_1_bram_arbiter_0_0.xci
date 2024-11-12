@@ -1,18 +1,18 @@
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
-    "xci_name": "design_1_generation_worker_0_0",
-    "cell_name": "generation_worker_0",
-    "component_reference": "user.org:user:generation_worker:1.0",
-    "ip_revision": "17",
-    "gen_directory": "../../../../../../senior_lab_hw.gen/sources_1/bd/design_1/ip/design_1_generation_worker_0_0",
+    "xci_name": "design_1_bram_arbiter_0_0",
+    "cell_name": "bram_arbiter_0",
+    "component_reference": "user.org:user:bram_arbiter:1.0",
+    "ip_revision": "4",
+    "gen_directory": "../../../../../../senior_lab_hw.gen/sources_1/bd/design_1/ip/design_1_bram_arbiter_0_0",
     "parameters": {
       "component_parameters": {
         "C_S00_AXI_DATA_WIDTH": [ { "value": "32", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "C_S00_AXI_ADDR_WIDTH": [ { "value": "4", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "C_S00_AXI_BASEADDR": [ { "value": "0xFFFFFFFF", "resolve_type": "user", "format": "bitString", "enabled": false, "usage": "all" } ],
         "C_S00_AXI_HIGHADDR": [ { "value": "0x00000000", "resolve_type": "user", "format": "bitString", "enabled": false, "usage": "all" } ],
-        "Component_Name": [ { "value": "design_1_generation_worker_0_0", "resolve_type": "user", "usage": "all" } ],
+        "Component_Name": [ { "value": "design_1_bram_arbiter_0_0", "resolve_type": "user", "usage": "all" } ],
         "BRAM_SIZE": [ { "value": "1024", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "BRAM_ADDR_WIDTH": [ { "value": "32", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "BRAM_WIDTH": [ { "value": "32", "resolve_type": "user", "format": "long", "usage": "all" } ]
@@ -39,9 +39,9 @@
       },
       "runtime_parameters": {
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
-        "IPREVISION": [ { "value": "17" } ],
+        "IPREVISION": [ { "value": "4" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../../../senior_lab_hw.gen/sources_1/bd/design_1/ip/design_1_generation_worker_0_0" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../../senior_lab_hw.gen/sources_1/bd/design_1/ip/design_1_bram_arbiter_0_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
         "SWVERSION": [ { "value": "2023.1" } ],
@@ -50,12 +50,19 @@
     },
     "boundary": {
       "ports": {
-        "worker1_request": [ { "direction": "out" } ],
-        "worker1_rw": [ { "direction": "out" } ],
-        "worker1_address": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
+        "worker1_request": [ { "direction": "in" } ],
+        "worker1_rw": [ { "direction": "in" } ],
+        "worker1_address": [ { "direction": "in", "size_left": "31", "size_right": "0" } ],
         "worker1_data_in": [ { "direction": "in", "size_left": "31", "size_right": "0" } ],
         "worker1_data_out": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
-        "worker1_ack": [ { "direction": "in" } ],
+        "worker1_ack": [ { "direction": "out" } ],
+        "addrb": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
+        "clkb": [ { "direction": "out" } ],
+        "dinb": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
+        "doutb": [ { "direction": "in", "size_left": "31", "size_right": "0", "driver_value": "8" } ],
+        "enb": [ { "direction": "out" } ],
+        "rstb": [ { "direction": "out" } ],
+        "web": [ { "direction": "out", "size_left": "3", "size_right": "0" } ],
         "s00_axi_aclk": [ { "direction": "in" } ],
         "s00_axi_aresetn": [ { "direction": "in" } ],
         "s00_axi_awaddr": [ { "direction": "in", "size_left": "3", "size_right": "0" } ],
@@ -169,6 +176,28 @@
           },
           "port_maps": {
             "CLK": [ { "physical_name": "s00_axi_aclk" } ]
+          }
+        },
+        "BRAM_PORTB": {
+          "vlnv": "xilinx.com:interface:bram:1.0",
+          "abstraction_type": "xilinx.com:interface:bram_rtl:1.0",
+          "mode": "master",
+          "parameters": {
+            "MASTER_TYPE": [ { "value": "BRAM_CTRL", "value_src": "constant", "value_permission": "bd", "usage": "all" } ],
+            "MEM_SIZE": [ { "value": "8192", "value_permission": "bd", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
+            "MEM_WIDTH": [ { "value": "32", "value_permission": "bd", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
+            "MEM_ECC": [ { "value": "NONE", "value_permission": "bd", "resolve_type": "generated", "is_ips_inferred": true, "is_static_object": false } ],
+            "READ_WRITE_MODE": [ { "value": "", "value_permission": "bd", "resolve_type": "generated", "is_ips_inferred": true, "is_static_object": false } ],
+            "READ_LATENCY": [ { "value": "1", "value_permission": "bd", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ]
+          },
+          "port_maps": {
+            "EN": [ { "physical_name": "enb" } ],
+            "DOUT": [ { "physical_name": "doutb" } ],
+            "DIN": [ { "physical_name": "dinb" } ],
+            "WE": [ { "physical_name": "web" } ],
+            "ADDR": [ { "physical_name": "addrb" } ],
+            "CLK": [ { "physical_name": "clkb" } ],
+            "RST": [ { "physical_name": "rstb" } ]
           }
         }
       },

@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity generation_worker_v1_0_S00_AXI is
+entity bram_arbiter_v1_0_S00_AXI is
 	generic (
 		-- Users to add parameters here
 		BRAM_SIZE : integer := 1024;
@@ -19,20 +19,20 @@ entity generation_worker_v1_0_S00_AXI is
 	port (
 		-- Users to add ports here
 		-- Worker 1 Signals
-		worker1_request : out std_logic;
-		worker1_rw : out std_logic;
-		worker1_address : out std_logic_vector(31 downto 0);
+		worker1_request : in std_logic;
+		worker1_rw : in std_logic;
+		worker1_address : in std_logic_vector(31 downto 0);
 		worker1_data_in : in std_logic_vector(31 downto 0);
 		worker1_data_out : out std_logic_vector(31 downto 0);
-		worker1_ack : in std_logic;
+		worker1_ack : out std_logic;
 		-- BRAM Interface
-		-- addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
-		-- clkb : out std_logic;
-		-- dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- enb : out std_logic;
-		-- rstb : out std_logic;
-		-- web : out std_logic;
+		addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
+		clkb : out std_logic;
+		dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		enb : out std_logic;
+		rstb : out std_logic;
+		web : out std_logic_vector(3 downto 0);
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -97,11 +97,10 @@ entity generation_worker_v1_0_S00_AXI is
     		-- accept the read data and response information.
 		S_AXI_RREADY	: in std_logic
 	);
-end generation_worker_v1_0_S00_AXI;
+end bram_arbiter_v1_0_S00_AXI;
 
-architecture arch_imp of generation_worker_v1_0_S00_AXI is
-	signal generation_worker_state : std_logic_vector(2 downto 0);
-	signal worker_read_data : std_logic_vector(31 downto 0);
+architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
+	signal arbiter_state : std_logic_vector(2 downto 0);
 
 	-- AXI4LITE signals
 	signal axi_awaddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
@@ -136,30 +135,35 @@ architecture arch_imp of generation_worker_v1_0_S00_AXI is
 	signal byte_index	: integer;
 	signal aw_en	: std_logic;
 
-    component worker_logic is
-        port(
-            clk : in STD_LOGIC;
-            reset : in STD_LOGIC;
-            bram_address : in STD_LOGIC_VECTOR(31 downto 0);
-            worker_state : out STD_LOGIC_VECTOR(2 downto 0);
-			worker_read_data : out STD_LOGIC_VECTOR(31 downto 0);
---			addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
-			-- Arbiter Signals
-			worker_request : out std_logic;
-			worker_address : out std_logic_vector(31 downto 0);
-			worker_rw : out std_logic;
-			worker_data_in : in std_logic_vector(31 downto 0);
-			worker_data_out : out std_logic_vector(31 downto 0);
-			worker_ack : in std_logic
-			-- dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			-- doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			-- -- enb : out std_logic;
-			-- rstb : out std_logic;
-			-- web : out std_logic_vector(3 downto 0)
-        );
-    end component worker_logic;
+	component bram_arbiter is
+		port(
+			clk : in std_logic;
+			reset : in std_logic;
+			arbiter_state : out std_logic_vector(2 downto 0);
+			-- Worker 1 Signals
+			worker1_request : in std_logic;
+			worker1_rw : in std_logic;
+			worker1_address : in std_logic_vector(31 downto 0);
+			worker1_data_in : in std_logic_vector(31 downto 0);
+			worker1_data_out : out std_logic_vector(31 downto 0);
+			worker1_ack : out std_logic;
+			-- Worker 2 Signals
+			worker2_request : in std_logic;
+			worker2_rw : in std_logic;
+			worker2_address : in std_logic_vector(31 downto 0);
+			worker2_data_in : in std_logic_vector(31 downto 0);
+			worker2_data_out : out std_logic_vector(31 downto 0);
+			worker2_ack : out std_logic;
+			-- BRAM Interface
+			addrb : out std_logic_vector(31 downto 0);
+			dinb : out std_logic_vector(31 downto 0);
+			doutb : in std_logic_vector(31 downto 0);
+			rstb : out std_logic;
+			web : out std_logic_vector(3 downto 0)
+		);
+	end component;
 
-begin
+	begin
 	-- I/O Connections assignments
 
 	S_AXI_AWREADY	<= axi_awready;
@@ -394,13 +398,13 @@ begin
 	    loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB);
 	    case loc_addr is
 	      when b"00" =>
-	        reg_data_out <= slv_reg0;
+	        reg_data_out <= (31 downto arbiter_state'length => '0') & arbiter_state;
 	      when b"01" =>
 	        reg_data_out <= slv_reg1;
 	      when b"10" =>
-	        reg_data_out <= worker_read_data;
+	        reg_data_out <= slv_reg2;
 	      when b"11" =>
-	        reg_data_out <= (31 downto generation_worker_state'length => '0') & generation_worker_state;
+	        reg_data_out <= slv_reg3;
 	      when others =>
 	        reg_data_out  <= (others => '0');
 	    end case;
@@ -424,32 +428,34 @@ begin
 	  end if;
 	end process;
 
-    GEN_WORKER : worker_logic
-    port map(
-		-- Worker Logic
-        clk => S_AXI_ACLK,
-        reset => slv_reg0(0),
-        bram_address => slv_reg1,
-		worker_state => generation_worker_state,
-		worker_read_data => worker_read_data,
-		-- Arbiter
-		worker_request => worker1_request,
-		worker_rw => worker1_rw,
-		worker_address => worker1_address,
-		worker_data_in => worker1_data_in,
-		worker_data_out => worker1_data_out,
-		worker_ack => worker1_ack
-		-- BRAM
-		-- addrb => addrb,
-		-- dinb => dinb,
-		-- doutb => doutb,
-		-- enb => enb,
-		-- rstb => rstb,
-		-- web => web
+
+	-- Add user logic here
+	BRAM_LOGIC : bram_arbiter
+	port map (
+		clk => S_AXI_ACLK,
+		reset => '0',
+		arbiter_state => arbiter_state,
+		worker1_request => worker1_request,
+		worker1_rw => worker1_rw,
+		worker1_address => worker1_address,
+		worker1_data_in => worker1_data_in,
+		worker1_data_out => worker1_data_out,
+		worker1_ack => worker1_ack,
+		worker2_request => '0',
+		worker2_rw => '0',
+		worker2_address => (others => '0'),
+		worker2_data_in => (others => '0'),
+		worker2_data_out => open,
+		worker2_ack => open,
+		addrb => addrb,
+		dinb => dinb,
+		doutb => doutb,
+		rstb => rstb,
+		web => web
 	);
-    
-	-- clkb <= S_AXI_ACLK;
-	-- enb <= '1';
+
+	clkb <= S_AXI_ACLK;
+	enb <= '1';
 	-- User logic ends
 
 end arch_imp;

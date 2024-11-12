@@ -2,7 +2,7 @@
 --Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
---Date        : Fri Nov  8 11:52:06 2024
+--Date        : Mon Nov 11 21:17:09 2024
 --Host        : desktop running 64-bit Arch Linux
 --Command     : generate_target design_1.bd
 --Design      : design_1
@@ -37,7 +37,7 @@ entity design_1 is
     FIXED_IO_ps_srstb : inout STD_LOGIC
   );
   attribute CORE_GENERATION_INFO : string;
-  attribute CORE_GENERATION_INFO of design_1 : entity is "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VHDL,numBlks=6,numReposBlks=6,numNonXlnxBlks=1,numHierBlks=0,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=8,da_bram_cntlr_cnt=3,da_clkrst_cnt=12,da_ps7_cnt=1,synth_mode=Global}";
+  attribute CORE_GENERATION_INFO of design_1 : entity is "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VHDL,numBlks=7,numReposBlks=7,numNonXlnxBlks=2,numHierBlks=0,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=9,da_bram_cntlr_cnt=4,da_clkrst_cnt=12,da_ps7_cnt=1,synth_mode=Global}";
   attribute HW_HANDOFF : string;
   attribute HW_HANDOFF of design_1 : entity is "design_1.hwdef";
 end design_1;
@@ -243,7 +243,26 @@ architecture STRUCTURE of design_1 is
     M01_AXI_rdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
     M01_AXI_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
     M01_AXI_rvalid : in STD_LOGIC;
-    M01_AXI_rready : out STD_LOGIC
+    M01_AXI_rready : out STD_LOGIC;
+    M02_AXI_awaddr : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M02_AXI_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M02_AXI_awvalid : out STD_LOGIC;
+    M02_AXI_awready : in STD_LOGIC;
+    M02_AXI_wdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    M02_AXI_wstrb : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M02_AXI_wvalid : out STD_LOGIC;
+    M02_AXI_wready : in STD_LOGIC;
+    M02_AXI_bresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M02_AXI_bvalid : in STD_LOGIC;
+    M02_AXI_bready : out STD_LOGIC;
+    M02_AXI_araddr : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M02_AXI_arprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M02_AXI_arvalid : out STD_LOGIC;
+    M02_AXI_arready : in STD_LOGIC;
+    M02_AXI_rdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    M02_AXI_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M02_AXI_rvalid : in STD_LOGIC;
+    M02_AXI_rready : out STD_LOGIC
   );
   end component design_1_smartconnect_0_0;
   component design_1_rst_ps7_0_50M_1 is
@@ -262,6 +281,43 @@ architecture STRUCTURE of design_1 is
   end component design_1_rst_ps7_0_50M_1;
   component design_1_generation_worker_0_0 is
   port (
+    worker1_request : out STD_LOGIC;
+    worker1_rw : out STD_LOGIC;
+    worker1_address : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker1_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker1_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker1_ack : in STD_LOGIC;
+    s00_axi_aclk : in STD_LOGIC;
+    s00_axi_aresetn : in STD_LOGIC;
+    s00_axi_awaddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_awprot : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    s00_axi_awvalid : in STD_LOGIC;
+    s00_axi_awready : out STD_LOGIC;
+    s00_axi_wdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    s00_axi_wstrb : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_wvalid : in STD_LOGIC;
+    s00_axi_wready : out STD_LOGIC;
+    s00_axi_bresp : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    s00_axi_bvalid : out STD_LOGIC;
+    s00_axi_bready : in STD_LOGIC;
+    s00_axi_araddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_arprot : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    s00_axi_arvalid : in STD_LOGIC;
+    s00_axi_arready : out STD_LOGIC;
+    s00_axi_rdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    s00_axi_rresp : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    s00_axi_rvalid : out STD_LOGIC;
+    s00_axi_rready : in STD_LOGIC
+  );
+  end component design_1_generation_worker_0_0;
+  component design_1_bram_arbiter_0_0 is
+  port (
+    worker1_request : in STD_LOGIC;
+    worker1_rw : in STD_LOGIC;
+    worker1_address : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker1_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker1_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker1_ack : out STD_LOGIC;
     addrb : out STD_LOGIC_VECTOR ( 31 downto 0 );
     clkb : out STD_LOGIC;
     dinb : out STD_LOGIC_VECTOR ( 31 downto 0 );
@@ -291,7 +347,7 @@ architecture STRUCTURE of design_1 is
     s00_axi_rvalid : out STD_LOGIC;
     s00_axi_rready : in STD_LOGIC
   );
-  end component design_1_generation_worker_0_0;
+  end component design_1_bram_arbiter_0_0;
   signal axi_bram_ctrl_0_BRAM_PORTA_ADDR : STD_LOGIC_VECTOR ( 12 downto 0 );
   signal axi_bram_ctrl_0_BRAM_PORTA_CLK : STD_LOGIC;
   signal axi_bram_ctrl_0_BRAM_PORTA_DIN : STD_LOGIC_VECTOR ( 31 downto 0 );
@@ -299,13 +355,19 @@ architecture STRUCTURE of design_1 is
   signal axi_bram_ctrl_0_BRAM_PORTA_EN : STD_LOGIC;
   signal axi_bram_ctrl_0_BRAM_PORTA_RST : STD_LOGIC;
   signal axi_bram_ctrl_0_BRAM_PORTA_WE : STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal generation_worker_0_BRAM_PORTB_ADDR : STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal generation_worker_0_BRAM_PORTB_CLK : STD_LOGIC;
-  signal generation_worker_0_BRAM_PORTB_DIN : STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal generation_worker_0_BRAM_PORTB_DOUT : STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal generation_worker_0_BRAM_PORTB_EN : STD_LOGIC;
-  signal generation_worker_0_BRAM_PORTB_RST : STD_LOGIC;
-  signal generation_worker_0_BRAM_PORTB_WE : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal bram_arbiter_0_BRAM_PORTB_ADDR : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal bram_arbiter_0_BRAM_PORTB_CLK : STD_LOGIC;
+  signal bram_arbiter_0_BRAM_PORTB_DIN : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal bram_arbiter_0_BRAM_PORTB_DOUT : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal bram_arbiter_0_BRAM_PORTB_EN : STD_LOGIC;
+  signal bram_arbiter_0_BRAM_PORTB_RST : STD_LOGIC;
+  signal bram_arbiter_0_BRAM_PORTB_WE : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal bram_arbiter_0_worker1_ack : STD_LOGIC;
+  signal bram_arbiter_0_worker1_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_0_worker1_address : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_0_worker1_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_0_worker1_request : STD_LOGIC;
+  signal generation_worker_0_worker1_rw : STD_LOGIC;
   signal processing_system7_0_DDR_ADDR : STD_LOGIC_VECTOR ( 14 downto 0 );
   signal processing_system7_0_DDR_BA : STD_LOGIC_VECTOR ( 2 downto 0 );
   signal processing_system7_0_DDR_CAS_N : STD_LOGIC;
@@ -406,6 +468,25 @@ architecture STRUCTURE of design_1 is
   signal smartconnect_0_M01_AXI_WREADY : STD_LOGIC;
   signal smartconnect_0_M01_AXI_WSTRB : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal smartconnect_0_M01_AXI_WVALID : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_ARADDR : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M02_AXI_ARPROT : STD_LOGIC_VECTOR ( 2 downto 0 );
+  signal smartconnect_0_M02_AXI_ARREADY : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_ARVALID : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_AWADDR : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M02_AXI_AWPROT : STD_LOGIC_VECTOR ( 2 downto 0 );
+  signal smartconnect_0_M02_AXI_AWREADY : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_AWVALID : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_BREADY : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_BRESP : STD_LOGIC_VECTOR ( 1 downto 0 );
+  signal smartconnect_0_M02_AXI_BVALID : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_RDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal smartconnect_0_M02_AXI_RREADY : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_RRESP : STD_LOGIC_VECTOR ( 1 downto 0 );
+  signal smartconnect_0_M02_AXI_RVALID : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_WDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal smartconnect_0_M02_AXI_WREADY : STD_LOGIC;
+  signal smartconnect_0_M02_AXI_WSTRB : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M02_AXI_WVALID : STD_LOGIC;
   signal NLW_blk_mem_gen_0_rsta_busy_UNCONNECTED : STD_LOGIC;
   signal NLW_blk_mem_gen_0_rstb_busy_UNCONNECTED : STD_LOGIC;
   signal NLW_processing_system7_0_USB0_VBUS_PWRSELECT_UNCONNECTED : STD_LOGIC;
@@ -482,30 +563,61 @@ blk_mem_gen_0: component design_1_blk_mem_gen_0_0
      port map (
       addra(31 downto 13) => B"0000000000000000000",
       addra(12 downto 0) => axi_bram_ctrl_0_BRAM_PORTA_ADDR(12 downto 0),
-      addrb(31 downto 0) => generation_worker_0_BRAM_PORTB_ADDR(31 downto 0),
+      addrb(31 downto 0) => bram_arbiter_0_BRAM_PORTB_ADDR(31 downto 0),
       clka => axi_bram_ctrl_0_BRAM_PORTA_CLK,
-      clkb => generation_worker_0_BRAM_PORTB_CLK,
+      clkb => bram_arbiter_0_BRAM_PORTB_CLK,
       dina(31 downto 0) => axi_bram_ctrl_0_BRAM_PORTA_DIN(31 downto 0),
-      dinb(31 downto 0) => generation_worker_0_BRAM_PORTB_DIN(31 downto 0),
+      dinb(31 downto 0) => bram_arbiter_0_BRAM_PORTB_DIN(31 downto 0),
       douta(31 downto 0) => axi_bram_ctrl_0_BRAM_PORTA_DOUT(31 downto 0),
-      doutb(31 downto 0) => generation_worker_0_BRAM_PORTB_DOUT(31 downto 0),
+      doutb(31 downto 0) => bram_arbiter_0_BRAM_PORTB_DOUT(31 downto 0),
       ena => axi_bram_ctrl_0_BRAM_PORTA_EN,
-      enb => generation_worker_0_BRAM_PORTB_EN,
+      enb => bram_arbiter_0_BRAM_PORTB_EN,
       rsta => axi_bram_ctrl_0_BRAM_PORTA_RST,
       rsta_busy => NLW_blk_mem_gen_0_rsta_busy_UNCONNECTED,
-      rstb => generation_worker_0_BRAM_PORTB_RST,
+      rstb => bram_arbiter_0_BRAM_PORTB_RST,
       rstb_busy => NLW_blk_mem_gen_0_rstb_busy_UNCONNECTED,
       wea(3 downto 0) => axi_bram_ctrl_0_BRAM_PORTA_WE(3 downto 0),
-      web(3 downto 0) => generation_worker_0_BRAM_PORTB_WE(3 downto 0)
+      web(3 downto 0) => bram_arbiter_0_BRAM_PORTB_WE(3 downto 0)
+    );
+bram_arbiter_0: component design_1_bram_arbiter_0_0
+     port map (
+      addrb(31 downto 0) => bram_arbiter_0_BRAM_PORTB_ADDR(31 downto 0),
+      clkb => bram_arbiter_0_BRAM_PORTB_CLK,
+      dinb(31 downto 0) => bram_arbiter_0_BRAM_PORTB_DIN(31 downto 0),
+      doutb(31 downto 0) => bram_arbiter_0_BRAM_PORTB_DOUT(31 downto 0),
+      enb => bram_arbiter_0_BRAM_PORTB_EN,
+      rstb => bram_arbiter_0_BRAM_PORTB_RST,
+      s00_axi_aclk => processing_system7_0_FCLK_CLK0,
+      s00_axi_araddr(3 downto 0) => smartconnect_0_M02_AXI_ARADDR(3 downto 0),
+      s00_axi_aresetn => rst_ps7_0_50M_peripheral_aresetn(0),
+      s00_axi_arprot(2 downto 0) => smartconnect_0_M02_AXI_ARPROT(2 downto 0),
+      s00_axi_arready => smartconnect_0_M02_AXI_ARREADY,
+      s00_axi_arvalid => smartconnect_0_M02_AXI_ARVALID,
+      s00_axi_awaddr(3 downto 0) => smartconnect_0_M02_AXI_AWADDR(3 downto 0),
+      s00_axi_awprot(2 downto 0) => smartconnect_0_M02_AXI_AWPROT(2 downto 0),
+      s00_axi_awready => smartconnect_0_M02_AXI_AWREADY,
+      s00_axi_awvalid => smartconnect_0_M02_AXI_AWVALID,
+      s00_axi_bready => smartconnect_0_M02_AXI_BREADY,
+      s00_axi_bresp(1 downto 0) => smartconnect_0_M02_AXI_BRESP(1 downto 0),
+      s00_axi_bvalid => smartconnect_0_M02_AXI_BVALID,
+      s00_axi_rdata(31 downto 0) => smartconnect_0_M02_AXI_RDATA(31 downto 0),
+      s00_axi_rready => smartconnect_0_M02_AXI_RREADY,
+      s00_axi_rresp(1 downto 0) => smartconnect_0_M02_AXI_RRESP(1 downto 0),
+      s00_axi_rvalid => smartconnect_0_M02_AXI_RVALID,
+      s00_axi_wdata(31 downto 0) => smartconnect_0_M02_AXI_WDATA(31 downto 0),
+      s00_axi_wready => smartconnect_0_M02_AXI_WREADY,
+      s00_axi_wstrb(3 downto 0) => smartconnect_0_M02_AXI_WSTRB(3 downto 0),
+      s00_axi_wvalid => smartconnect_0_M02_AXI_WVALID,
+      web(3 downto 0) => bram_arbiter_0_BRAM_PORTB_WE(3 downto 0),
+      worker1_ack => bram_arbiter_0_worker1_ack,
+      worker1_address(31 downto 0) => generation_worker_0_worker1_address(31 downto 0),
+      worker1_data_in(31 downto 0) => generation_worker_0_worker1_data_out(31 downto 0),
+      worker1_data_out(31 downto 0) => bram_arbiter_0_worker1_data_out(31 downto 0),
+      worker1_request => generation_worker_0_worker1_request,
+      worker1_rw => generation_worker_0_worker1_rw
     );
 generation_worker_0: component design_1_generation_worker_0_0
      port map (
-      addrb(31 downto 0) => generation_worker_0_BRAM_PORTB_ADDR(31 downto 0),
-      clkb => generation_worker_0_BRAM_PORTB_CLK,
-      dinb(31 downto 0) => generation_worker_0_BRAM_PORTB_DIN(31 downto 0),
-      doutb(31 downto 0) => generation_worker_0_BRAM_PORTB_DOUT(31 downto 0),
-      enb => generation_worker_0_BRAM_PORTB_EN,
-      rstb => generation_worker_0_BRAM_PORTB_RST,
       s00_axi_aclk => processing_system7_0_FCLK_CLK0,
       s00_axi_araddr(3 downto 0) => smartconnect_0_M01_AXI_ARADDR(3 downto 0),
       s00_axi_aresetn => rst_ps7_0_50M_peripheral_aresetn(0),
@@ -527,7 +639,12 @@ generation_worker_0: component design_1_generation_worker_0_0
       s00_axi_wready => smartconnect_0_M01_AXI_WREADY,
       s00_axi_wstrb(3 downto 0) => smartconnect_0_M01_AXI_WSTRB(3 downto 0),
       s00_axi_wvalid => smartconnect_0_M01_AXI_WVALID,
-      web(3 downto 0) => generation_worker_0_BRAM_PORTB_WE(3 downto 0)
+      worker1_ack => bram_arbiter_0_worker1_ack,
+      worker1_address(31 downto 0) => generation_worker_0_worker1_address(31 downto 0),
+      worker1_data_in(31 downto 0) => bram_arbiter_0_worker1_data_out(31 downto 0),
+      worker1_data_out(31 downto 0) => generation_worker_0_worker1_data_out(31 downto 0),
+      worker1_request => generation_worker_0_worker1_request,
+      worker1_rw => generation_worker_0_worker1_rw
     );
 processing_system7_0: component design_1_processing_system7_0_0
      port map (
@@ -650,6 +767,25 @@ smartconnect_0: component design_1_smartconnect_0_0
       M01_AXI_wready => smartconnect_0_M01_AXI_WREADY,
       M01_AXI_wstrb(3 downto 0) => smartconnect_0_M01_AXI_WSTRB(3 downto 0),
       M01_AXI_wvalid => smartconnect_0_M01_AXI_WVALID,
+      M02_AXI_araddr(3 downto 0) => smartconnect_0_M02_AXI_ARADDR(3 downto 0),
+      M02_AXI_arprot(2 downto 0) => smartconnect_0_M02_AXI_ARPROT(2 downto 0),
+      M02_AXI_arready => smartconnect_0_M02_AXI_ARREADY,
+      M02_AXI_arvalid => smartconnect_0_M02_AXI_ARVALID,
+      M02_AXI_awaddr(3 downto 0) => smartconnect_0_M02_AXI_AWADDR(3 downto 0),
+      M02_AXI_awprot(2 downto 0) => smartconnect_0_M02_AXI_AWPROT(2 downto 0),
+      M02_AXI_awready => smartconnect_0_M02_AXI_AWREADY,
+      M02_AXI_awvalid => smartconnect_0_M02_AXI_AWVALID,
+      M02_AXI_bready => smartconnect_0_M02_AXI_BREADY,
+      M02_AXI_bresp(1 downto 0) => smartconnect_0_M02_AXI_BRESP(1 downto 0),
+      M02_AXI_bvalid => smartconnect_0_M02_AXI_BVALID,
+      M02_AXI_rdata(31 downto 0) => smartconnect_0_M02_AXI_RDATA(31 downto 0),
+      M02_AXI_rready => smartconnect_0_M02_AXI_RREADY,
+      M02_AXI_rresp(1 downto 0) => smartconnect_0_M02_AXI_RRESP(1 downto 0),
+      M02_AXI_rvalid => smartconnect_0_M02_AXI_RVALID,
+      M02_AXI_wdata(31 downto 0) => smartconnect_0_M02_AXI_WDATA(31 downto 0),
+      M02_AXI_wready => smartconnect_0_M02_AXI_WREADY,
+      M02_AXI_wstrb(3 downto 0) => smartconnect_0_M02_AXI_WSTRB(3 downto 0),
+      M02_AXI_wvalid => smartconnect_0_M02_AXI_WVALID,
       S00_AXI_araddr(31 downto 0) => processing_system7_0_M_AXI_GP0_ARADDR(31 downto 0),
       S00_AXI_arburst(1 downto 0) => processing_system7_0_M_AXI_GP0_ARBURST(1 downto 0),
       S00_AXI_arcache(3 downto 0) => processing_system7_0_M_AXI_GP0_ARCACHE(3 downto 0),
@@ -689,6 +825,6 @@ smartconnect_0: component design_1_smartconnect_0_0
       S00_AXI_wstrb(3 downto 0) => processing_system7_0_M_AXI_GP0_WSTRB(3 downto 0),
       S00_AXI_wvalid => processing_system7_0_M_AXI_GP0_WVALID,
       aclk => processing_system7_0_FCLK_CLK0,
-      aresetn => '1'
+      aresetn => rst_ps7_0_50M_peripheral_aresetn(0)
     );
 end STRUCTURE;
