@@ -4,7 +4,7 @@
     "xci_name": "design_1_generation_worker_0_0",
     "cell_name": "generation_worker_0",
     "component_reference": "user.org:user:generation_worker:1.0",
-    "ip_revision": "17",
+    "ip_revision": "19",
     "gen_directory": "../../../../../../senior_lab_hw.gen/sources_1/bd/design_1/ip/design_1_generation_worker_0_0",
     "parameters": {
       "component_parameters": {
@@ -13,15 +13,11 @@
         "C_S00_AXI_BASEADDR": [ { "value": "0xFFFFFFFF", "resolve_type": "user", "format": "bitString", "enabled": false, "usage": "all" } ],
         "C_S00_AXI_HIGHADDR": [ { "value": "0x00000000", "resolve_type": "user", "format": "bitString", "enabled": false, "usage": "all" } ],
         "Component_Name": [ { "value": "design_1_generation_worker_0_0", "resolve_type": "user", "usage": "all" } ],
-        "BRAM_SIZE": [ { "value": "1024", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "BRAM_ADDR_WIDTH": [ { "value": "32", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "BRAM_WIDTH": [ { "value": "32", "resolve_type": "user", "format": "long", "usage": "all" } ]
       },
       "model_parameters": {
         "C_S00_AXI_DATA_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_S00_AXI_ADDR_WIDTH": [ { "value": "4", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "BRAM_SIZE": [ { "value": "1024", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "BRAM_ADDR_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "BRAM_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ]
       },
       "project_parameters": {
@@ -39,7 +35,7 @@
       },
       "runtime_parameters": {
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
-        "IPREVISION": [ { "value": "17" } ],
+        "IPREVISION": [ { "value": "19" } ],
         "MANAGED": [ { "value": "TRUE" } ],
         "OUTPUTDIR": [ { "value": "../../../../../../senior_lab_hw.gen/sources_1/bd/design_1/ip/design_1_generation_worker_0_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
@@ -50,12 +46,12 @@
     },
     "boundary": {
       "ports": {
-        "worker1_request": [ { "direction": "out" } ],
-        "worker1_rw": [ { "direction": "out" } ],
-        "worker1_address": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
-        "worker1_data_in": [ { "direction": "in", "size_left": "31", "size_right": "0" } ],
-        "worker1_data_out": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
-        "worker1_ack": [ { "direction": "in" } ],
+        "worker_request": [ { "direction": "out" } ],
+        "worker_rw": [ { "direction": "out" } ],
+        "worker_address": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
+        "worker_data_in": [ { "direction": "in", "size_left": "31", "size_right": "0" } ],
+        "worker_data_out": [ { "direction": "out", "size_left": "31", "size_right": "0" } ],
+        "worker_ack": [ { "direction": "in" } ],
         "s00_axi_aclk": [ { "direction": "in" } ],
         "s00_axi_aresetn": [ { "direction": "in" } ],
         "s00_axi_awaddr": [ { "direction": "in", "size_left": "3", "size_right": "0" } ],

@@ -33,6 +33,7 @@ entity bram_arbiter_v1_0_S00_AXI is
 		enb : out std_logic;
 		rstb : out std_logic;
 		web : out std_logic_vector(3 downto 0);
+		rstb_busy : in std_logic;
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -159,7 +160,8 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 			dinb : out std_logic_vector(31 downto 0);
 			doutb : in std_logic_vector(31 downto 0);
 			rstb : out std_logic;
-			web : out std_logic_vector(3 downto 0)
+			web : out std_logic_vector(3 downto 0);
+			rstb_busy : in std_logic
 		);
 	end component;
 
@@ -435,23 +437,27 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 		clk => S_AXI_ACLK,
 		reset => '0',
 		arbiter_state => arbiter_state,
+		-- Worker 1 Signals
 		worker1_request => worker1_request,
 		worker1_rw => worker1_rw,
 		worker1_address => worker1_address,
 		worker1_data_in => worker1_data_in,
 		worker1_data_out => worker1_data_out,
 		worker1_ack => worker1_ack,
+		-- Worker 2 Signals
 		worker2_request => '0',
 		worker2_rw => '0',
 		worker2_address => (others => '0'),
 		worker2_data_in => (others => '0'),
 		worker2_data_out => open,
 		worker2_ack => open,
+		-- BRAM Interface
 		addrb => addrb,
 		dinb => dinb,
 		doutb => doutb,
 		rstb => rstb,
-		web => web
+		web => web,
+		rstb_busy => rstb_busy
 	);
 
 	clkb <= S_AXI_ACLK;

@@ -1354,8 +1354,14 @@
           "PROTOCOL": {
             "value": "AXI4LITE"
           },
+          "RD_CMD_OPTIMIZATION": {
+            "value": "1"
+          },
           "SINGLE_PORT_BRAM": {
             "value": "1"
+          },
+          "USE_ECC": {
+            "value": "0"
           }
         },
         "hdl_attributes": {
@@ -1375,6 +1381,9 @@
         "xci_path": "ip/design_1_blk_mem_gen_0_0/design_1_blk_mem_gen_0_0.xci",
         "inst_hier_path": "blk_mem_gen_0",
         "parameters": {
+          "EN_SAFETY_CKT": {
+            "value": "true"
+          },
           "Memory_Type": {
             "value": "True_Dual_Port_RAM"
           }
@@ -1577,39 +1586,45 @@
       }
     },
     "nets": {
+      "blk_mem_gen_0_rstb_busy": {
+        "ports": [
+          "blk_mem_gen_0/rstb_busy",
+          "bram_arbiter_0/rstb_busy"
+        ]
+      },
       "bram_arbiter_0_worker1_ack": {
         "ports": [
           "bram_arbiter_0/worker1_ack",
-          "generation_worker_0/worker1_ack"
+          "generation_worker_0/worker_ack"
         ]
       },
       "bram_arbiter_0_worker1_data_out": {
         "ports": [
           "bram_arbiter_0/worker1_data_out",
-          "generation_worker_0/worker1_data_in"
-        ]
-      },
-      "generation_worker_0_worker1_address": {
-        "ports": [
-          "generation_worker_0/worker1_address",
-          "bram_arbiter_0/worker1_address"
+          "generation_worker_0/worker_data_in"
         ]
       },
       "generation_worker_0_worker1_data_out": {
         "ports": [
-          "generation_worker_0/worker1_data_out",
+          "generation_worker_0/worker_data_out",
           "bram_arbiter_0/worker1_data_in"
         ]
       },
       "generation_worker_0_worker1_request": {
         "ports": [
-          "generation_worker_0/worker1_request",
+          "generation_worker_0/worker_request",
           "bram_arbiter_0/worker1_request"
         ]
       },
-      "generation_worker_0_worker1_rw": {
+      "generation_worker_0_worker_address": {
         "ports": [
-          "generation_worker_0/worker1_rw",
+          "generation_worker_0/worker_address",
+          "bram_arbiter_0/worker1_address"
+        ]
+      },
+      "generation_worker_0_worker_rw": {
+        "ports": [
+          "generation_worker_0/worker_rw",
           "bram_arbiter_0/worker1_rw"
         ]
       },

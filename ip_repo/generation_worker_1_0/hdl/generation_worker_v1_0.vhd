@@ -5,8 +5,6 @@ use ieee.numeric_std.all;
 entity generation_worker_v1_0 is
 	generic (
 		-- Users to add parameters here
-		BRAM_SIZE : integer := 1024;
-		BRAM_ADDR_WIDTH : integer := 32;
 		BRAM_WIDTH : integer := 32;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
@@ -18,21 +16,12 @@ entity generation_worker_v1_0 is
 	);
 	port (
 		-- Users to add ports here
-		-- Worker 1 Signals
-		worker1_request : out std_logic;
-		worker1_rw : out std_logic;
-		worker1_address : out std_logic_vector(31 downto 0);
-		worker1_data_in : in std_logic_vector(31 downto 0);
-		worker1_data_out : out std_logic_vector(31 downto 0);
-		worker1_ack : in std_logic;
-		-- BRAM Interface
-		-- addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
-		-- clkb : out std_logic;
-		-- dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- enb : out std_logic;
-		-- rstb : out std_logic;
-		-- web : out std_logic;
+		worker_request : out std_logic;
+		worker_rw : out std_logic;
+		worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_ack : in std_logic;
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -64,42 +53,24 @@ end generation_worker_v1_0;
 
 architecture arch_imp of generation_worker_v1_0 is
 
-	-- ATTRIBUTE X_INTERFACE_INFO : string;
-	-- ATTRIBUTE X_INTERFACE_INFO OF addrb : SIGNAL IS "xilinx.com:interface:bram:1.0 BRAM_PORTB ADDR";
-	-- ATTRIBUTE X_INTERFACE_INFO OF clkb : SIGNAL IS "xilinx.com:interface:bram:1.0 BRAM_PORTB CLK";
-	-- ATTRIBUTE X_INTERFACE_INFO OF dinb : SIGNAL IS "xilinx.com:interface:bram:1.0 BRAM_PORTB DIN";
-	-- ATTRIBUTE X_INTERFACE_INFO OF doutb : SIGNAL IS "xilinx.com:interface:bram:1.0 BRAM_PORTB DOUT";
-	-- ATTRIBUTE X_INTERFACE_INFO OF enb : SIGNAL IS "xilinx.com:interface:bram:1.0 BRAM_PORTB EN";
-	-- ATTRIBUTE X_INTERFACE_INFO OF rstb : SIGNAL IS "xilinx.com:interface:bram:1.0 BRAM_PORTB RST";
-	-- ATTRIBUTE X_INTERFACE_INFO OF web : SIGNAL IS "xilinx.com:interface:bram:1.0 BRAM_PORTB WE";
-
 	-- component declaration
 	component generation_worker_v1_0_S00_AXI is
 		generic (
 		C_S_AXI_DATA_WIDTH	: integer	:= 32;
 		C_S_AXI_ADDR_WIDTH	: integer	:= 4;
-		BRAM_SIZE : integer := 1024;
-		BRAM_ADDR_WIDTH : integer := 32;
-		BRAM_WIDTH : integer := 32
+		-- User Generics
+		BRAM_WIDTH : integer := BRAM_WIDTH
+		-- User Generics ends
 		);
 		port (
-		-- My ports
-		-- Worker 1 Signals
-		worker1_request : out std_logic;
-		worker1_rw : out std_logic;
-		worker1_address : out std_logic_vector(31 downto 0);
-		worker1_data_in : in std_logic_vector(31 downto 0);
-		worker1_data_out : out std_logic_vector(31 downto 0);
-		worker1_ack : in std_logic;
-		-- BRAM Interface
-		-- addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
-		-- clkb : out std_logic;
-		-- dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- enb : out std_logic;
-		-- rstb : out std_logic;
-		-- web : out std_logic_vector(3 downto 0);
-		-- My ports ends
+		-- User ports
+		worker_request : out std_logic;
+		worker_rw : out std_logic;
+		worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_ack : in std_logic;
+		-- User ports ends
 		S_AXI_ACLK	: in std_logic;
 		S_AXI_ARESETN	: in std_logic;
 		S_AXI_AWADDR	: in std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
@@ -131,30 +102,19 @@ generation_worker_v1_0_S00_AXI_inst : generation_worker_v1_0_S00_AXI
 	generic map (
 		C_S_AXI_DATA_WIDTH	=> C_S00_AXI_DATA_WIDTH,
 		C_S_AXI_ADDR_WIDTH	=> C_S00_AXI_ADDR_WIDTH,
-		-- My Generics
-		BRAM_SIZE => BRAM_SIZE,
-		BRAM_ADDR_WIDTH => BRAM_ADDR_WIDTH,
+		-- User Generics
 		BRAM_WIDTH => BRAM_WIDTH
-		-- My Generics ends
+		-- User Generics ends
 	)
 	port map (
-		-- My ports
-		-- Worker 1 Signals
-		worker1_request => worker1_request,
-		worker1_rw => worker1_rw,
-		worker1_address => worker1_address,
-		worker1_data_in => worker1_data_in,
-		worker1_data_out => worker1_data_out,
-		worker1_ack => worker1_ack,
-		-- BRAM Interface
-		-- addrb => addrb,
-		-- clkb => clkb,
-		-- dinb => dinb,
-		-- doutb => doutb,
-		-- enb => enb,
-		-- rstb => rstb,
-		-- web => web,
-		-- My ports ends
+		-- User ports
+		worker_request => worker_request,
+		worker_rw => worker_rw,
+		worker_address => worker_address,
+		worker_data_in => worker_data_in,
+		worker_data_out => worker_data_out,
+		worker_ack => worker_ack,
+		-- User ports ends
 		S_AXI_ACLK	=> s00_axi_aclk,
 		S_AXI_ARESETN	=> s00_axi_aresetn,
 		S_AXI_AWADDR	=> s00_axi_awaddr,

@@ -5,8 +5,6 @@ use ieee.numeric_std.all;
 entity generation_worker_v1_0_S00_AXI is
 	generic (
 		-- Users to add parameters here
-		BRAM_SIZE : integer := 1024;
-		BRAM_ADDR_WIDTH : integer := 32;
 		BRAM_WIDTH : integer := 32;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
@@ -19,20 +17,12 @@ entity generation_worker_v1_0_S00_AXI is
 	port (
 		-- Users to add ports here
 		-- Worker 1 Signals
-		worker1_request : out std_logic;
-		worker1_rw : out std_logic;
-		worker1_address : out std_logic_vector(31 downto 0);
-		worker1_data_in : in std_logic_vector(31 downto 0);
-		worker1_data_out : out std_logic_vector(31 downto 0);
-		worker1_ack : in std_logic;
-		-- BRAM Interface
-		-- addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
-		-- clkb : out std_logic;
-		-- dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		-- enb : out std_logic;
-		-- rstb : out std_logic;
-		-- web : out std_logic;
+		worker_request : out std_logic;
+		worker_rw : out std_logic;
+		worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker_ack : in std_logic;
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -100,8 +90,8 @@ entity generation_worker_v1_0_S00_AXI is
 end generation_worker_v1_0_S00_AXI;
 
 architecture arch_imp of generation_worker_v1_0_S00_AXI is
-	signal generation_worker_state : std_logic_vector(2 downto 0);
-	signal worker_read_data : std_logic_vector(31 downto 0);
+	signal generation_worker_state : std_logic_vector(3 downto 0);
+	signal worker_read_data : std_logic_vector(BRAM_WIDTH-1 downto 0);
 
 	-- AXI4LITE signals
 	signal axi_awaddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
@@ -137,25 +127,23 @@ architecture arch_imp of generation_worker_v1_0_S00_AXI is
 	signal aw_en	: std_logic;
 
     component worker_logic is
+		generic (
+			BRAM_WIDTH : integer := BRAM_WIDTH
+		);
         port(
             clk : in STD_LOGIC;
             reset : in STD_LOGIC;
-            bram_address : in STD_LOGIC_VECTOR(31 downto 0);
-            worker_state : out STD_LOGIC_VECTOR(2 downto 0);
-			worker_read_data : out STD_LOGIC_VECTOR(31 downto 0);
---			addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
+            bram_address : in STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
+            worker_state : out STD_LOGIC_VECTOR(3 downto 0);
+			worker_read_data : out STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
+			should_continue_manager : in STD_LOGIC;
 			-- Arbiter Signals
 			worker_request : out std_logic;
-			worker_address : out std_logic_vector(31 downto 0);
+			worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 			worker_rw : out std_logic;
-			worker_data_in : in std_logic_vector(31 downto 0);
-			worker_data_out : out std_logic_vector(31 downto 0);
+			worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 			worker_ack : in std_logic
-			-- dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			-- doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			-- -- enb : out std_logic;
-			-- rstb : out std_logic;
-			-- web : out std_logic_vector(3 downto 0)
         );
     end component worker_logic;
 
@@ -400,7 +388,7 @@ begin
 	      when b"10" =>
 	        reg_data_out <= worker_read_data;
 	      when b"11" =>
-	        reg_data_out <= (31 downto generation_worker_state'length => '0') & generation_worker_state;
+	        reg_data_out <= (BRAM_WIDTH-1 downto generation_worker_state'length => '0') & generation_worker_state;
 	      when others =>
 	        reg_data_out  <= (others => '0');
 	    end case;
@@ -424,7 +412,11 @@ begin
 	  end if;
 	end process;
 
+	-- Add user logic here
     GEN_WORKER : worker_logic
+	generic map(
+		BRAM_WIDTH => BRAM_WIDTH
+	)
     port map(
 		-- Worker Logic
         clk => S_AXI_ACLK,
@@ -432,24 +424,15 @@ begin
         bram_address => slv_reg1,
 		worker_state => generation_worker_state,
 		worker_read_data => worker_read_data,
+		should_continue_manager => slv_reg0(1),
 		-- Arbiter
-		worker_request => worker1_request,
-		worker_rw => worker1_rw,
-		worker_address => worker1_address,
-		worker_data_in => worker1_data_in,
-		worker_data_out => worker1_data_out,
-		worker_ack => worker1_ack
-		-- BRAM
-		-- addrb => addrb,
-		-- dinb => dinb,
-		-- doutb => doutb,
-		-- enb => enb,
-		-- rstb => rstb,
-		-- web => web
+		worker_request => worker_request,
+		worker_rw => worker_rw,
+		worker_address => worker_address,
+		worker_data_in => worker_data_in,
+		worker_data_out => worker_data_out,
+		worker_ack => worker_ack
 	);
-    
-	-- clkb <= S_AXI_ACLK;
-	-- enb <= '1';
 	-- User logic ends
 
 end arch_imp;

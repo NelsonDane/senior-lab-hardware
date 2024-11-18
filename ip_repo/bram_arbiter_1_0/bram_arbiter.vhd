@@ -25,74 +25,101 @@ Port (
     dinb : out std_logic_vector(31 downto 0);
     doutb : in std_logic_vector(31 downto 0);
     rstb : out std_logic;
-    web : out std_logic_vector(3 downto 0)
+    web : out std_logic_vector(3 downto 0);
+    rstb_busy : in std_logic
 );
 end bram_arbiter;
 
 -- Read from BRAM requires:
 -- 1. Set addrb for address
 -- 2. Set web to "0000"
--- 3. Set rstb to '0'
+-- 3. Wait for doutb to be valid
 -- 4. Read doutb
 -- Write to BRAM requires:
 -- 1. Set addrb and dinb for address/data
 -- 2. Set web to "1111"
--- 3. Set rstb to '1'
 
 architecture Behavioral of bram_arbiter is
     type state_type is (IDLE, GRANT_WORKER_1, GRANT_WORKER_2);
     signal current_state : state_type := IDLE;
+    function state_to_status(state : state_type) return std_logic_vector is
+    begin
+        case state is
+            when IDLE => return "000";
+            when GRANT_WORKER_1 => return "001";
+            when GRANT_WORKER_2 => return "010";
+            when others => return "111";
+        end case;
+    end function;
+
+    -- Number of cycles to wait for BRAM read
+    -- In testing it was 5-6 but 10 is a safe value
+    signal READ_BRAM_WAIT_CONSTANT : integer := 10;
+    signal read_bram_wait_counter : integer := 0;
+
 begin
     process(clk) is
     begin
         if reset = '1' then
             current_state <= IDLE;
-            arbiter_state <= "000";
-            worker1_ack <= '0';
-            worker2_ack <= '0';
+            arbiter_state <= state_to_status(current_state);
         elsif rising_edge(clk) then
             case current_state is
                 when IDLE =>
-                    arbiter_state <= "000";
+                    arbiter_state <= state_to_status(current_state);
+                    rstb <= '0';
+                    worker1_ack <= '0';
+                    worker2_ack <= '0';
+                    read_bram_wait_counter <= 0;
+                    web <= "0000";
                     -- Round Robin Arbiter
-                    if worker1_request = '1' then
-                        current_state <= GRANT_WORKER_1;
-                    elsif worker2_request = '1' then
-                        current_state <= GRANT_WORKER_2;
+                    if rstb_busy = '0' then
+                        if worker1_request = '1' then
+                            current_state <= GRANT_WORKER_1;
+                        elsif worker2_request = '1' then
+                            current_state <= GRANT_WORKER_2;
+                        end if;
                     end if;
                 when GRANT_WORKER_1 =>
+                    arbiter_state <= state_to_status(current_state);
                     addrb <= worker1_address;
                     worker1_ack <= '1';
+                    worker2_ack <= '0';
                     if worker1_rw = '1' then
                         -- Write to BRAM
-                        arbiter_state <= "001";
                         dinb <= worker1_data_in;
                         web <= "1111";
-                        rstb <= '1';
                     else
-                        -- Read from BRAM
-                        arbiter_state <= "010";
-                        worker1_data_out <= doutb;
                         web <= "0000";
-                        rstb <= '0';
+                        -- Read from BRAM after waiting
+                        if read_bram_wait_counter < READ_BRAM_WAIT_CONSTANT then
+                            read_bram_wait_counter <= read_bram_wait_counter + 1;
+                        else
+                            worker1_data_out <= doutb;
+                        end if;
                     end if;
                     if worker1_request = '0' then
                         current_state <= IDLE;
                         worker1_ack <= '0';
                     end if;
                 when GRANT_WORKER_2 =>
+                    arbiter_state <= state_to_status(current_state);
                     addrb <= worker2_address;
+                    worker1_ack <= '0';
                     worker2_ack <= '1';
                     if worker2_rw = '1' then
                         -- Write to BRAM
-                        arbiter_state <= "011";
                         dinb <= worker2_data_in;
                         web <= "1111";
                     else
                         -- Read from BRAM
-                        arbiter_state <= "100";
-                        worker2_data_out <= doutb;
                         web <= "0000";
+                        -- Read from BRAM after waiting
+                        if read_bram_wait_counter < READ_BRAM_WAIT_CONSTANT then
+                            read_bram_wait_counter <= read_bram_wait_counter + 1;
+                        else
+                            worker2_data_out <= doutb;
+                        end if;
                     end if;
                     if worker2_request = '0' then
                         current_state <= IDLE;

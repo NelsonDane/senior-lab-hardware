@@ -2,7 +2,7 @@
 --Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
---Date        : Mon Nov 11 21:17:09 2024
+--Date        : Sun Nov 17 22:08:18 2024
 --Host        : desktop running 64-bit Arch Linux
 --Command     : generate_target design_1.bd
 --Design      : design_1
@@ -281,12 +281,12 @@ architecture STRUCTURE of design_1 is
   end component design_1_rst_ps7_0_50M_1;
   component design_1_generation_worker_0_0 is
   port (
-    worker1_request : out STD_LOGIC;
-    worker1_rw : out STD_LOGIC;
-    worker1_address : out STD_LOGIC_VECTOR ( 31 downto 0 );
-    worker1_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
-    worker1_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
-    worker1_ack : in STD_LOGIC;
+    worker_request : out STD_LOGIC;
+    worker_rw : out STD_LOGIC;
+    worker_address : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_ack : in STD_LOGIC;
     s00_axi_aclk : in STD_LOGIC;
     s00_axi_aresetn : in STD_LOGIC;
     s00_axi_awaddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
@@ -325,6 +325,7 @@ architecture STRUCTURE of design_1 is
     enb : out STD_LOGIC;
     rstb : out STD_LOGIC;
     web : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    rstb_busy : in STD_LOGIC;
     s00_axi_aclk : in STD_LOGIC;
     s00_axi_aresetn : in STD_LOGIC;
     s00_axi_awaddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
@@ -355,6 +356,7 @@ architecture STRUCTURE of design_1 is
   signal axi_bram_ctrl_0_BRAM_PORTA_EN : STD_LOGIC;
   signal axi_bram_ctrl_0_BRAM_PORTA_RST : STD_LOGIC;
   signal axi_bram_ctrl_0_BRAM_PORTA_WE : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal blk_mem_gen_0_rstb_busy : STD_LOGIC;
   signal bram_arbiter_0_BRAM_PORTB_ADDR : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal bram_arbiter_0_BRAM_PORTB_CLK : STD_LOGIC;
   signal bram_arbiter_0_BRAM_PORTB_DIN : STD_LOGIC_VECTOR ( 31 downto 0 );
@@ -364,10 +366,10 @@ architecture STRUCTURE of design_1 is
   signal bram_arbiter_0_BRAM_PORTB_WE : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal bram_arbiter_0_worker1_ack : STD_LOGIC;
   signal bram_arbiter_0_worker1_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal generation_worker_0_worker1_address : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal generation_worker_0_worker1_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal generation_worker_0_worker1_request : STD_LOGIC;
-  signal generation_worker_0_worker1_rw : STD_LOGIC;
+  signal generation_worker_0_worker_address : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_0_worker_rw : STD_LOGIC;
   signal processing_system7_0_DDR_ADDR : STD_LOGIC_VECTOR ( 14 downto 0 );
   signal processing_system7_0_DDR_BA : STD_LOGIC_VECTOR ( 2 downto 0 );
   signal processing_system7_0_DDR_CAS_N : STD_LOGIC;
@@ -488,7 +490,6 @@ architecture STRUCTURE of design_1 is
   signal smartconnect_0_M02_AXI_WSTRB : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal smartconnect_0_M02_AXI_WVALID : STD_LOGIC;
   signal NLW_blk_mem_gen_0_rsta_busy_UNCONNECTED : STD_LOGIC;
-  signal NLW_blk_mem_gen_0_rstb_busy_UNCONNECTED : STD_LOGIC;
   signal NLW_processing_system7_0_USB0_VBUS_PWRSELECT_UNCONNECTED : STD_LOGIC;
   signal NLW_processing_system7_0_USB0_PORT_INDCTL_UNCONNECTED : STD_LOGIC_VECTOR ( 1 downto 0 );
   signal NLW_rst_ps7_0_50M_mb_reset_UNCONNECTED : STD_LOGIC;
@@ -575,7 +576,7 @@ blk_mem_gen_0: component design_1_blk_mem_gen_0_0
       rsta => axi_bram_ctrl_0_BRAM_PORTA_RST,
       rsta_busy => NLW_blk_mem_gen_0_rsta_busy_UNCONNECTED,
       rstb => bram_arbiter_0_BRAM_PORTB_RST,
-      rstb_busy => NLW_blk_mem_gen_0_rstb_busy_UNCONNECTED,
+      rstb_busy => blk_mem_gen_0_rstb_busy,
       wea(3 downto 0) => axi_bram_ctrl_0_BRAM_PORTA_WE(3 downto 0),
       web(3 downto 0) => bram_arbiter_0_BRAM_PORTB_WE(3 downto 0)
     );
@@ -587,6 +588,7 @@ bram_arbiter_0: component design_1_bram_arbiter_0_0
       doutb(31 downto 0) => bram_arbiter_0_BRAM_PORTB_DOUT(31 downto 0),
       enb => bram_arbiter_0_BRAM_PORTB_EN,
       rstb => bram_arbiter_0_BRAM_PORTB_RST,
+      rstb_busy => blk_mem_gen_0_rstb_busy,
       s00_axi_aclk => processing_system7_0_FCLK_CLK0,
       s00_axi_araddr(3 downto 0) => smartconnect_0_M02_AXI_ARADDR(3 downto 0),
       s00_axi_aresetn => rst_ps7_0_50M_peripheral_aresetn(0),
@@ -610,11 +612,11 @@ bram_arbiter_0: component design_1_bram_arbiter_0_0
       s00_axi_wvalid => smartconnect_0_M02_AXI_WVALID,
       web(3 downto 0) => bram_arbiter_0_BRAM_PORTB_WE(3 downto 0),
       worker1_ack => bram_arbiter_0_worker1_ack,
-      worker1_address(31 downto 0) => generation_worker_0_worker1_address(31 downto 0),
+      worker1_address(31 downto 0) => generation_worker_0_worker_address(31 downto 0),
       worker1_data_in(31 downto 0) => generation_worker_0_worker1_data_out(31 downto 0),
       worker1_data_out(31 downto 0) => bram_arbiter_0_worker1_data_out(31 downto 0),
       worker1_request => generation_worker_0_worker1_request,
-      worker1_rw => generation_worker_0_worker1_rw
+      worker1_rw => generation_worker_0_worker_rw
     );
 generation_worker_0: component design_1_generation_worker_0_0
      port map (
@@ -639,12 +641,12 @@ generation_worker_0: component design_1_generation_worker_0_0
       s00_axi_wready => smartconnect_0_M01_AXI_WREADY,
       s00_axi_wstrb(3 downto 0) => smartconnect_0_M01_AXI_WSTRB(3 downto 0),
       s00_axi_wvalid => smartconnect_0_M01_AXI_WVALID,
-      worker1_ack => bram_arbiter_0_worker1_ack,
-      worker1_address(31 downto 0) => generation_worker_0_worker1_address(31 downto 0),
-      worker1_data_in(31 downto 0) => bram_arbiter_0_worker1_data_out(31 downto 0),
-      worker1_data_out(31 downto 0) => generation_worker_0_worker1_data_out(31 downto 0),
-      worker1_request => generation_worker_0_worker1_request,
-      worker1_rw => generation_worker_0_worker1_rw
+      worker_ack => bram_arbiter_0_worker1_ack,
+      worker_address(31 downto 0) => generation_worker_0_worker_address(31 downto 0),
+      worker_data_in(31 downto 0) => bram_arbiter_0_worker1_data_out(31 downto 0),
+      worker_data_out(31 downto 0) => generation_worker_0_worker1_data_out(31 downto 0),
+      worker_request => generation_worker_0_worker1_request,
+      worker_rw => generation_worker_0_worker_rw
     );
 processing_system7_0: component design_1_processing_system7_0_0
      port map (
