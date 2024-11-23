@@ -17,6 +17,8 @@
       "smartconnect_0": "",
       "rst_ps7_0_50M": "",
       "generation_worker_0": "",
+      "generation_worker_1": "",
+      "generation_worker_2": "",
       "bram_arbiter_0": ""
     },
     "interface_ports": {
@@ -1355,7 +1357,7 @@
             "value": "AXI4LITE"
           },
           "RD_CMD_OPTIMIZATION": {
-            "value": "1"
+            "value": "0"
           },
           "SINGLE_PORT_BRAM": {
             "value": "1"
@@ -1396,7 +1398,7 @@
         "inst_hier_path": "smartconnect_0",
         "parameters": {
           "NUM_MI": {
-            "value": "3"
+            "value": "5"
           },
           "NUM_SI": {
             "value": "1"
@@ -1418,7 +1420,9 @@
             "bridges": [
               "M00_AXI",
               "M01_AXI",
-              "M02_AXI"
+              "M02_AXI",
+              "M03_AXI",
+              "M04_AXI"
             ]
           },
           "M00_AXI": {
@@ -1513,6 +1517,68 @@
                 "value": "0"
               }
             }
+          },
+          "M03_AXI": {
+            "mode": "Master",
+            "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "MAX_BURST_LENGTH": {
+                "value": "1"
+              },
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_READ_THREADS": {
+                "value": "1"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_THREADS": {
+                "value": "1"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "SUPPORTS_NARROW_BURST": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            }
+          },
+          "M04_AXI": {
+            "mode": "Master",
+            "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "MAX_BURST_LENGTH": {
+                "value": "1"
+              },
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_READ_THREADS": {
+                "value": "1"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_THREADS": {
+                "value": "1"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "SUPPORTS_NARROW_BURST": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            }
           }
         }
       },
@@ -1527,6 +1593,18 @@
         "xci_name": "design_1_generation_worker_0_0",
         "xci_path": "ip/design_1_generation_worker_0_0/design_1_generation_worker_0_0.xci",
         "inst_hier_path": "generation_worker_0"
+      },
+      "generation_worker_1": {
+        "vlnv": "user.org:user:generation_worker:1.0",
+        "xci_name": "design_1_generation_worker_1_0",
+        "xci_path": "ip/design_1_generation_worker_1_0/design_1_generation_worker_1_0.xci",
+        "inst_hier_path": "generation_worker_1"
+      },
+      "generation_worker_2": {
+        "vlnv": "user.org:user:generation_worker:1.0",
+        "xci_name": "design_1_generation_worker_2_0",
+        "xci_path": "ip/design_1_generation_worker_2_0/design_1_generation_worker_2_0.xci",
+        "inst_hier_path": "generation_worker_2"
       },
       "bram_arbiter_0": {
         "vlnv": "user.org:user:bram_arbiter:1.0",
@@ -1583,6 +1661,18 @@
           "smartconnect_0/M02_AXI",
           "bram_arbiter_0/S00_AXI"
         ]
+      },
+      "smartconnect_0_M03_AXI": {
+        "interface_ports": [
+          "smartconnect_0/M03_AXI",
+          "generation_worker_1/S00_AXI"
+        ]
+      },
+      "smartconnect_0_M04_AXI": {
+        "interface_ports": [
+          "smartconnect_0/M04_AXI",
+          "generation_worker_2/S00_AXI"
+        ]
       }
     },
     "nets": {
@@ -1602,6 +1692,30 @@
         "ports": [
           "bram_arbiter_0/worker1_data_out",
           "generation_worker_0/worker_data_in"
+        ]
+      },
+      "bram_arbiter_0_worker2_ack": {
+        "ports": [
+          "bram_arbiter_0/worker2_ack",
+          "generation_worker_1/worker_ack"
+        ]
+      },
+      "bram_arbiter_0_worker2_data_out": {
+        "ports": [
+          "bram_arbiter_0/worker2_data_out",
+          "generation_worker_1/worker_data_in"
+        ]
+      },
+      "bram_arbiter_0_worker3_ack": {
+        "ports": [
+          "bram_arbiter_0/worker3_ack",
+          "generation_worker_2/worker_ack"
+        ]
+      },
+      "bram_arbiter_0_worker3_data_out": {
+        "ports": [
+          "bram_arbiter_0/worker3_data_out",
+          "generation_worker_2/worker_data_in"
         ]
       },
       "generation_worker_0_worker1_data_out": {
@@ -1628,6 +1742,54 @@
           "bram_arbiter_0/worker1_rw"
         ]
       },
+      "generation_worker_1_worker_address": {
+        "ports": [
+          "generation_worker_1/worker_address",
+          "bram_arbiter_0/worker2_address"
+        ]
+      },
+      "generation_worker_1_worker_data_out": {
+        "ports": [
+          "generation_worker_1/worker_data_out",
+          "bram_arbiter_0/worker2_data_in"
+        ]
+      },
+      "generation_worker_1_worker_request": {
+        "ports": [
+          "generation_worker_1/worker_request",
+          "bram_arbiter_0/worker2_request"
+        ]
+      },
+      "generation_worker_1_worker_rw": {
+        "ports": [
+          "generation_worker_1/worker_rw",
+          "bram_arbiter_0/worker2_rw"
+        ]
+      },
+      "generation_worker_2_worker_address": {
+        "ports": [
+          "generation_worker_2/worker_address",
+          "bram_arbiter_0/worker3_address"
+        ]
+      },
+      "generation_worker_2_worker_data_out": {
+        "ports": [
+          "generation_worker_2/worker_data_out",
+          "bram_arbiter_0/worker3_data_in"
+        ]
+      },
+      "generation_worker_2_worker_request": {
+        "ports": [
+          "generation_worker_2/worker_request",
+          "bram_arbiter_0/worker3_request"
+        ]
+      },
+      "generation_worker_2_worker_rw": {
+        "ports": [
+          "generation_worker_2/worker_rw",
+          "bram_arbiter_0/worker3_rw"
+        ]
+      },
       "processing_system7_0_FCLK_CLK0": {
         "ports": [
           "processing_system7_0/FCLK_CLK0",
@@ -1636,6 +1798,8 @@
           "rst_ps7_0_50M/slowest_sync_clk",
           "processing_system7_0/M_AXI_GP0_ACLK",
           "generation_worker_0/s00_axi_aclk",
+          "generation_worker_1/s00_axi_aclk",
+          "generation_worker_2/s00_axi_aclk",
           "bram_arbiter_0/s00_axi_aclk"
         ]
       },
@@ -1651,8 +1815,21 @@
           "axi_bram_ctrl_0/s_axi_aresetn",
           "smartconnect_0/aresetn",
           "generation_worker_0/s00_axi_aresetn",
+          "generation_worker_1/s00_axi_aresetn",
+          "generation_worker_2/s00_axi_aresetn",
           "bram_arbiter_0/s00_axi_aresetn"
         ]
+      }
+    },
+    "comments": {
+      "/generation_worker_0": {
+        "comment_3": "Worker 1"
+      },
+      "/generation_worker_1": {
+        "comment_1": "Worker 2"
+      },
+      "/generation_worker_2": {
+        "comment_2": "Worker 3"
       }
     },
     "addressing": {
@@ -1675,6 +1852,20 @@
               "SEG_generation_worker_0_S00_AXI_reg": {
                 "address_block": "/generation_worker_0/S00_AXI/S00_AXI_reg",
                 "offset": "0x43C00000",
+                "range": "64K",
+                "offset_base_param": "C_S00_AXI_BASEADDR",
+                "offset_high_param": "C_S00_AXI_HIGHADDR"
+              },
+              "SEG_generation_worker_1_S00_AXI_reg": {
+                "address_block": "/generation_worker_1/S00_AXI/S00_AXI_reg",
+                "offset": "0x43C20000",
+                "range": "64K",
+                "offset_base_param": "C_S00_AXI_BASEADDR",
+                "offset_high_param": "C_S00_AXI_HIGHADDR"
+              },
+              "SEG_generation_worker_2_S00_AXI_reg": {
+                "address_block": "/generation_worker_2/S00_AXI/S00_AXI_reg",
+                "offset": "0x43C30000",
                 "range": "64K",
                 "offset_base_param": "C_S00_AXI_BASEADDR",
                 "offset_high_param": "C_S00_AXI_HIGHADDR"

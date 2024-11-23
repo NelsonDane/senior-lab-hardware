@@ -2,7 +2,7 @@
 --Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
---Date        : Sun Nov 17 22:08:18 2024
+--Date        : Sat Nov 23 16:20:37 2024
 --Host        : desktop running 64-bit Arch Linux
 --Command     : generate_target design_1.bd
 --Design      : design_1
@@ -37,7 +37,7 @@ entity design_1 is
     FIXED_IO_ps_srstb : inout STD_LOGIC
   );
   attribute CORE_GENERATION_INFO : string;
-  attribute CORE_GENERATION_INFO of design_1 : entity is "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VHDL,numBlks=7,numReposBlks=7,numNonXlnxBlks=2,numHierBlks=0,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=9,da_bram_cntlr_cnt=4,da_clkrst_cnt=12,da_ps7_cnt=1,synth_mode=Global}";
+  attribute CORE_GENERATION_INFO of design_1 : entity is "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VHDL,numBlks=9,numReposBlks=9,numNonXlnxBlks=4,numHierBlks=0,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=11,da_bram_cntlr_cnt=4,da_clkrst_cnt=12,da_ps7_cnt=1,synth_mode=Global}";
   attribute HW_HANDOFF : string;
   attribute HW_HANDOFF of design_1 : entity is "design_1.hwdef";
 end design_1;
@@ -262,7 +262,45 @@ architecture STRUCTURE of design_1 is
     M02_AXI_rdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
     M02_AXI_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
     M02_AXI_rvalid : in STD_LOGIC;
-    M02_AXI_rready : out STD_LOGIC
+    M02_AXI_rready : out STD_LOGIC;
+    M03_AXI_awaddr : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M03_AXI_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M03_AXI_awvalid : out STD_LOGIC;
+    M03_AXI_awready : in STD_LOGIC;
+    M03_AXI_wdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    M03_AXI_wstrb : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M03_AXI_wvalid : out STD_LOGIC;
+    M03_AXI_wready : in STD_LOGIC;
+    M03_AXI_bresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M03_AXI_bvalid : in STD_LOGIC;
+    M03_AXI_bready : out STD_LOGIC;
+    M03_AXI_araddr : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M03_AXI_arprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M03_AXI_arvalid : out STD_LOGIC;
+    M03_AXI_arready : in STD_LOGIC;
+    M03_AXI_rdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    M03_AXI_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M03_AXI_rvalid : in STD_LOGIC;
+    M03_AXI_rready : out STD_LOGIC;
+    M04_AXI_awaddr : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M04_AXI_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M04_AXI_awvalid : out STD_LOGIC;
+    M04_AXI_awready : in STD_LOGIC;
+    M04_AXI_wdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    M04_AXI_wstrb : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M04_AXI_wvalid : out STD_LOGIC;
+    M04_AXI_wready : in STD_LOGIC;
+    M04_AXI_bresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M04_AXI_bvalid : in STD_LOGIC;
+    M04_AXI_bready : out STD_LOGIC;
+    M04_AXI_araddr : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M04_AXI_arprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M04_AXI_arvalid : out STD_LOGIC;
+    M04_AXI_arready : in STD_LOGIC;
+    M04_AXI_rdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    M04_AXI_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M04_AXI_rvalid : in STD_LOGIC;
+    M04_AXI_rready : out STD_LOGIC
   );
   end component design_1_smartconnect_0_0;
   component design_1_rst_ps7_0_50M_1 is
@@ -310,6 +348,68 @@ architecture STRUCTURE of design_1 is
     s00_axi_rready : in STD_LOGIC
   );
   end component design_1_generation_worker_0_0;
+  component design_1_generation_worker_1_0 is
+  port (
+    worker_request : out STD_LOGIC;
+    worker_rw : out STD_LOGIC;
+    worker_address : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_ack : in STD_LOGIC;
+    s00_axi_aclk : in STD_LOGIC;
+    s00_axi_aresetn : in STD_LOGIC;
+    s00_axi_awaddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_awprot : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    s00_axi_awvalid : in STD_LOGIC;
+    s00_axi_awready : out STD_LOGIC;
+    s00_axi_wdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    s00_axi_wstrb : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_wvalid : in STD_LOGIC;
+    s00_axi_wready : out STD_LOGIC;
+    s00_axi_bresp : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    s00_axi_bvalid : out STD_LOGIC;
+    s00_axi_bready : in STD_LOGIC;
+    s00_axi_araddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_arprot : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    s00_axi_arvalid : in STD_LOGIC;
+    s00_axi_arready : out STD_LOGIC;
+    s00_axi_rdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    s00_axi_rresp : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    s00_axi_rvalid : out STD_LOGIC;
+    s00_axi_rready : in STD_LOGIC
+  );
+  end component design_1_generation_worker_1_0;
+  component design_1_generation_worker_2_0 is
+  port (
+    worker_request : out STD_LOGIC;
+    worker_rw : out STD_LOGIC;
+    worker_address : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker_ack : in STD_LOGIC;
+    s00_axi_aclk : in STD_LOGIC;
+    s00_axi_aresetn : in STD_LOGIC;
+    s00_axi_awaddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_awprot : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    s00_axi_awvalid : in STD_LOGIC;
+    s00_axi_awready : out STD_LOGIC;
+    s00_axi_wdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    s00_axi_wstrb : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_wvalid : in STD_LOGIC;
+    s00_axi_wready : out STD_LOGIC;
+    s00_axi_bresp : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    s00_axi_bvalid : out STD_LOGIC;
+    s00_axi_bready : in STD_LOGIC;
+    s00_axi_araddr : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axi_arprot : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    s00_axi_arvalid : in STD_LOGIC;
+    s00_axi_arready : out STD_LOGIC;
+    s00_axi_rdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    s00_axi_rresp : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    s00_axi_rvalid : out STD_LOGIC;
+    s00_axi_rready : in STD_LOGIC
+  );
+  end component design_1_generation_worker_2_0;
   component design_1_bram_arbiter_0_0 is
   port (
     worker1_request : in STD_LOGIC;
@@ -318,6 +418,18 @@ architecture STRUCTURE of design_1 is
     worker1_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
     worker1_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
     worker1_ack : out STD_LOGIC;
+    worker2_request : in STD_LOGIC;
+    worker2_rw : in STD_LOGIC;
+    worker2_address : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker2_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker2_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker2_ack : out STD_LOGIC;
+    worker3_request : in STD_LOGIC;
+    worker3_rw : in STD_LOGIC;
+    worker3_address : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker3_data_in : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker3_data_out : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    worker3_ack : out STD_LOGIC;
     addrb : out STD_LOGIC_VECTOR ( 31 downto 0 );
     clkb : out STD_LOGIC;
     dinb : out STD_LOGIC_VECTOR ( 31 downto 0 );
@@ -366,10 +478,22 @@ architecture STRUCTURE of design_1 is
   signal bram_arbiter_0_BRAM_PORTB_WE : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal bram_arbiter_0_worker1_ack : STD_LOGIC;
   signal bram_arbiter_0_worker1_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal bram_arbiter_0_worker2_ack : STD_LOGIC;
+  signal bram_arbiter_0_worker2_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal bram_arbiter_0_worker3_ack : STD_LOGIC;
+  signal bram_arbiter_0_worker3_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal generation_worker_0_worker1_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal generation_worker_0_worker1_request : STD_LOGIC;
   signal generation_worker_0_worker_address : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal generation_worker_0_worker_rw : STD_LOGIC;
+  signal generation_worker_1_worker_address : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_1_worker_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_1_worker_request : STD_LOGIC;
+  signal generation_worker_1_worker_rw : STD_LOGIC;
+  signal generation_worker_2_worker_address : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_2_worker_data_out : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal generation_worker_2_worker_request : STD_LOGIC;
+  signal generation_worker_2_worker_rw : STD_LOGIC;
   signal processing_system7_0_DDR_ADDR : STD_LOGIC_VECTOR ( 14 downto 0 );
   signal processing_system7_0_DDR_BA : STD_LOGIC_VECTOR ( 2 downto 0 );
   signal processing_system7_0_DDR_CAS_N : STD_LOGIC;
@@ -489,6 +613,44 @@ architecture STRUCTURE of design_1 is
   signal smartconnect_0_M02_AXI_WREADY : STD_LOGIC;
   signal smartconnect_0_M02_AXI_WSTRB : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal smartconnect_0_M02_AXI_WVALID : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_ARADDR : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M03_AXI_ARPROT : STD_LOGIC_VECTOR ( 2 downto 0 );
+  signal smartconnect_0_M03_AXI_ARREADY : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_ARVALID : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_AWADDR : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M03_AXI_AWPROT : STD_LOGIC_VECTOR ( 2 downto 0 );
+  signal smartconnect_0_M03_AXI_AWREADY : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_AWVALID : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_BREADY : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_BRESP : STD_LOGIC_VECTOR ( 1 downto 0 );
+  signal smartconnect_0_M03_AXI_BVALID : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_RDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal smartconnect_0_M03_AXI_RREADY : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_RRESP : STD_LOGIC_VECTOR ( 1 downto 0 );
+  signal smartconnect_0_M03_AXI_RVALID : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_WDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal smartconnect_0_M03_AXI_WREADY : STD_LOGIC;
+  signal smartconnect_0_M03_AXI_WSTRB : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M03_AXI_WVALID : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_ARADDR : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M04_AXI_ARPROT : STD_LOGIC_VECTOR ( 2 downto 0 );
+  signal smartconnect_0_M04_AXI_ARREADY : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_ARVALID : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_AWADDR : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M04_AXI_AWPROT : STD_LOGIC_VECTOR ( 2 downto 0 );
+  signal smartconnect_0_M04_AXI_AWREADY : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_AWVALID : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_BREADY : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_BRESP : STD_LOGIC_VECTOR ( 1 downto 0 );
+  signal smartconnect_0_M04_AXI_BVALID : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_RDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal smartconnect_0_M04_AXI_RREADY : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_RRESP : STD_LOGIC_VECTOR ( 1 downto 0 );
+  signal smartconnect_0_M04_AXI_RVALID : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_WDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal smartconnect_0_M04_AXI_WREADY : STD_LOGIC;
+  signal smartconnect_0_M04_AXI_WSTRB : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal smartconnect_0_M04_AXI_WVALID : STD_LOGIC;
   signal NLW_blk_mem_gen_0_rsta_busy_UNCONNECTED : STD_LOGIC;
   signal NLW_processing_system7_0_USB0_VBUS_PWRSELECT_UNCONNECTED : STD_LOGIC;
   signal NLW_processing_system7_0_USB0_PORT_INDCTL_UNCONNECTED : STD_LOGIC_VECTOR ( 1 downto 0 );
@@ -503,31 +665,31 @@ architecture STRUCTURE of design_1 is
   attribute BMM_INFO_PROCESSOR : string;
   attribute BMM_INFO_PROCESSOR of processing_system7_0 : label is "arm > design_1 axi_bram_ctrl_0";
   attribute KEEP_HIERARCHY of processing_system7_0 : label is "yes";
-  attribute X_INTERFACE_INFO : string;
-  attribute X_INTERFACE_INFO of DDR_cas_n : signal is "xilinx.com:interface:ddrx:1.0 DDR CAS_N";
-  attribute X_INTERFACE_INFO of DDR_ck_n : signal is "xilinx.com:interface:ddrx:1.0 DDR CK_N";
-  attribute X_INTERFACE_INFO of DDR_ck_p : signal is "xilinx.com:interface:ddrx:1.0 DDR CK_P";
-  attribute X_INTERFACE_INFO of DDR_cke : signal is "xilinx.com:interface:ddrx:1.0 DDR CKE";
-  attribute X_INTERFACE_INFO of DDR_cs_n : signal is "xilinx.com:interface:ddrx:1.0 DDR CS_N";
-  attribute X_INTERFACE_INFO of DDR_odt : signal is "xilinx.com:interface:ddrx:1.0 DDR ODT";
-  attribute X_INTERFACE_INFO of DDR_ras_n : signal is "xilinx.com:interface:ddrx:1.0 DDR RAS_N";
-  attribute X_INTERFACE_INFO of DDR_reset_n : signal is "xilinx.com:interface:ddrx:1.0 DDR RESET_N";
-  attribute X_INTERFACE_INFO of DDR_we_n : signal is "xilinx.com:interface:ddrx:1.0 DDR WE_N";
-  attribute X_INTERFACE_INFO of FIXED_IO_ddr_vrn : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO DDR_VRN";
+  attribute x_interface_info : string;
+  attribute x_interface_info of DDR_cas_n : signal is "xilinx.com:interface:ddrx:1.0 DDR CAS_N";
+  attribute x_interface_info of DDR_ck_n : signal is "xilinx.com:interface:ddrx:1.0 DDR CK_N";
+  attribute x_interface_info of DDR_ck_p : signal is "xilinx.com:interface:ddrx:1.0 DDR CK_P";
+  attribute x_interface_info of DDR_cke : signal is "xilinx.com:interface:ddrx:1.0 DDR CKE";
+  attribute x_interface_info of DDR_cs_n : signal is "xilinx.com:interface:ddrx:1.0 DDR CS_N";
+  attribute x_interface_info of DDR_odt : signal is "xilinx.com:interface:ddrx:1.0 DDR ODT";
+  attribute x_interface_info of DDR_ras_n : signal is "xilinx.com:interface:ddrx:1.0 DDR RAS_N";
+  attribute x_interface_info of DDR_reset_n : signal is "xilinx.com:interface:ddrx:1.0 DDR RESET_N";
+  attribute x_interface_info of DDR_we_n : signal is "xilinx.com:interface:ddrx:1.0 DDR WE_N";
   attribute X_INTERFACE_PARAMETER : string;
   attribute X_INTERFACE_PARAMETER of FIXED_IO_ddr_vrn : signal is "XIL_INTERFACENAME FIXED_IO, CAN_DEBUG false";
-  attribute X_INTERFACE_INFO of FIXED_IO_ddr_vrp : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO DDR_VRP";
-  attribute X_INTERFACE_INFO of FIXED_IO_ps_clk : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_CLK";
-  attribute X_INTERFACE_INFO of FIXED_IO_ps_porb : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_PORB";
-  attribute X_INTERFACE_INFO of FIXED_IO_ps_srstb : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_SRSTB";
-  attribute X_INTERFACE_INFO of DDR_addr : signal is "xilinx.com:interface:ddrx:1.0 DDR ADDR";
+  attribute x_interface_info of FIXED_IO_ddr_vrn : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO DDR_VRN";
+  attribute x_interface_info of FIXED_IO_ddr_vrp : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO DDR_VRP";
+  attribute x_interface_info of FIXED_IO_ps_clk : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_CLK";
+  attribute x_interface_info of FIXED_IO_ps_porb : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_PORB";
+  attribute x_interface_info of FIXED_IO_ps_srstb : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_SRSTB";
   attribute X_INTERFACE_PARAMETER of DDR_addr : signal is "XIL_INTERFACENAME DDR, AXI_ARBITRATION_SCHEME TDM, BURST_LENGTH 8, CAN_DEBUG false, CAS_LATENCY 11, CAS_WRITE_LATENCY 11, CS_ENABLED true, DATA_MASK_ENABLED true, DATA_WIDTH 8, MEMORY_TYPE COMPONENTS, MEM_ADDR_MAP ROW_COLUMN_BANK, SLOT Single, TIMEPERIOD_PS 1250";
-  attribute X_INTERFACE_INFO of DDR_ba : signal is "xilinx.com:interface:ddrx:1.0 DDR BA";
-  attribute X_INTERFACE_INFO of DDR_dm : signal is "xilinx.com:interface:ddrx:1.0 DDR DM";
-  attribute X_INTERFACE_INFO of DDR_dq : signal is "xilinx.com:interface:ddrx:1.0 DDR DQ";
-  attribute X_INTERFACE_INFO of DDR_dqs_n : signal is "xilinx.com:interface:ddrx:1.0 DDR DQS_N";
-  attribute X_INTERFACE_INFO of DDR_dqs_p : signal is "xilinx.com:interface:ddrx:1.0 DDR DQS_P";
-  attribute X_INTERFACE_INFO of FIXED_IO_mio : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO MIO";
+  attribute x_interface_info of DDR_addr : signal is "xilinx.com:interface:ddrx:1.0 DDR ADDR";
+  attribute x_interface_info of DDR_ba : signal is "xilinx.com:interface:ddrx:1.0 DDR BA";
+  attribute x_interface_info of DDR_dm : signal is "xilinx.com:interface:ddrx:1.0 DDR DM";
+  attribute x_interface_info of DDR_dq : signal is "xilinx.com:interface:ddrx:1.0 DDR DQ";
+  attribute x_interface_info of DDR_dqs_n : signal is "xilinx.com:interface:ddrx:1.0 DDR DQS_N";
+  attribute x_interface_info of DDR_dqs_p : signal is "xilinx.com:interface:ddrx:1.0 DDR DQS_P";
+  attribute x_interface_info of FIXED_IO_mio : signal is "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO MIO";
 begin
 axi_bram_ctrl_0: component design_1_axi_bram_ctrl_0_0
      port map (
@@ -616,9 +778,22 @@ bram_arbiter_0: component design_1_bram_arbiter_0_0
       worker1_data_in(31 downto 0) => generation_worker_0_worker1_data_out(31 downto 0),
       worker1_data_out(31 downto 0) => bram_arbiter_0_worker1_data_out(31 downto 0),
       worker1_request => generation_worker_0_worker1_request,
-      worker1_rw => generation_worker_0_worker_rw
+      worker1_rw => generation_worker_0_worker_rw,
+      worker2_ack => bram_arbiter_0_worker2_ack,
+      worker2_address(31 downto 0) => generation_worker_1_worker_address(31 downto 0),
+      worker2_data_in(31 downto 0) => generation_worker_1_worker_data_out(31 downto 0),
+      worker2_data_out(31 downto 0) => bram_arbiter_0_worker2_data_out(31 downto 0),
+      worker2_request => generation_worker_1_worker_request,
+      worker2_rw => generation_worker_1_worker_rw,
+      worker3_ack => bram_arbiter_0_worker3_ack,
+      worker3_address(31 downto 0) => generation_worker_2_worker_address(31 downto 0),
+      worker3_data_in(31 downto 0) => generation_worker_2_worker_data_out(31 downto 0),
+      worker3_data_out(31 downto 0) => bram_arbiter_0_worker3_data_out(31 downto 0),
+      worker3_request => generation_worker_2_worker_request,
+      worker3_rw => generation_worker_2_worker_rw
     );
-generation_worker_0: component design_1_generation_worker_0_0
+-- Worker 1
+  generation_worker_0: component design_1_generation_worker_0_0
      port map (
       s00_axi_aclk => processing_system7_0_FCLK_CLK0,
       s00_axi_araddr(3 downto 0) => smartconnect_0_M01_AXI_ARADDR(3 downto 0),
@@ -647,6 +822,68 @@ generation_worker_0: component design_1_generation_worker_0_0
       worker_data_out(31 downto 0) => generation_worker_0_worker1_data_out(31 downto 0),
       worker_request => generation_worker_0_worker1_request,
       worker_rw => generation_worker_0_worker_rw
+    );
+-- Worker 2
+  generation_worker_1: component design_1_generation_worker_1_0
+     port map (
+      s00_axi_aclk => processing_system7_0_FCLK_CLK0,
+      s00_axi_araddr(3 downto 0) => smartconnect_0_M03_AXI_ARADDR(3 downto 0),
+      s00_axi_aresetn => rst_ps7_0_50M_peripheral_aresetn(0),
+      s00_axi_arprot(2 downto 0) => smartconnect_0_M03_AXI_ARPROT(2 downto 0),
+      s00_axi_arready => smartconnect_0_M03_AXI_ARREADY,
+      s00_axi_arvalid => smartconnect_0_M03_AXI_ARVALID,
+      s00_axi_awaddr(3 downto 0) => smartconnect_0_M03_AXI_AWADDR(3 downto 0),
+      s00_axi_awprot(2 downto 0) => smartconnect_0_M03_AXI_AWPROT(2 downto 0),
+      s00_axi_awready => smartconnect_0_M03_AXI_AWREADY,
+      s00_axi_awvalid => smartconnect_0_M03_AXI_AWVALID,
+      s00_axi_bready => smartconnect_0_M03_AXI_BREADY,
+      s00_axi_bresp(1 downto 0) => smartconnect_0_M03_AXI_BRESP(1 downto 0),
+      s00_axi_bvalid => smartconnect_0_M03_AXI_BVALID,
+      s00_axi_rdata(31 downto 0) => smartconnect_0_M03_AXI_RDATA(31 downto 0),
+      s00_axi_rready => smartconnect_0_M03_AXI_RREADY,
+      s00_axi_rresp(1 downto 0) => smartconnect_0_M03_AXI_RRESP(1 downto 0),
+      s00_axi_rvalid => smartconnect_0_M03_AXI_RVALID,
+      s00_axi_wdata(31 downto 0) => smartconnect_0_M03_AXI_WDATA(31 downto 0),
+      s00_axi_wready => smartconnect_0_M03_AXI_WREADY,
+      s00_axi_wstrb(3 downto 0) => smartconnect_0_M03_AXI_WSTRB(3 downto 0),
+      s00_axi_wvalid => smartconnect_0_M03_AXI_WVALID,
+      worker_ack => bram_arbiter_0_worker2_ack,
+      worker_address(31 downto 0) => generation_worker_1_worker_address(31 downto 0),
+      worker_data_in(31 downto 0) => bram_arbiter_0_worker2_data_out(31 downto 0),
+      worker_data_out(31 downto 0) => generation_worker_1_worker_data_out(31 downto 0),
+      worker_request => generation_worker_1_worker_request,
+      worker_rw => generation_worker_1_worker_rw
+    );
+-- Worker 3
+  generation_worker_2: component design_1_generation_worker_2_0
+     port map (
+      s00_axi_aclk => processing_system7_0_FCLK_CLK0,
+      s00_axi_araddr(3 downto 0) => smartconnect_0_M04_AXI_ARADDR(3 downto 0),
+      s00_axi_aresetn => rst_ps7_0_50M_peripheral_aresetn(0),
+      s00_axi_arprot(2 downto 0) => smartconnect_0_M04_AXI_ARPROT(2 downto 0),
+      s00_axi_arready => smartconnect_0_M04_AXI_ARREADY,
+      s00_axi_arvalid => smartconnect_0_M04_AXI_ARVALID,
+      s00_axi_awaddr(3 downto 0) => smartconnect_0_M04_AXI_AWADDR(3 downto 0),
+      s00_axi_awprot(2 downto 0) => smartconnect_0_M04_AXI_AWPROT(2 downto 0),
+      s00_axi_awready => smartconnect_0_M04_AXI_AWREADY,
+      s00_axi_awvalid => smartconnect_0_M04_AXI_AWVALID,
+      s00_axi_bready => smartconnect_0_M04_AXI_BREADY,
+      s00_axi_bresp(1 downto 0) => smartconnect_0_M04_AXI_BRESP(1 downto 0),
+      s00_axi_bvalid => smartconnect_0_M04_AXI_BVALID,
+      s00_axi_rdata(31 downto 0) => smartconnect_0_M04_AXI_RDATA(31 downto 0),
+      s00_axi_rready => smartconnect_0_M04_AXI_RREADY,
+      s00_axi_rresp(1 downto 0) => smartconnect_0_M04_AXI_RRESP(1 downto 0),
+      s00_axi_rvalid => smartconnect_0_M04_AXI_RVALID,
+      s00_axi_wdata(31 downto 0) => smartconnect_0_M04_AXI_WDATA(31 downto 0),
+      s00_axi_wready => smartconnect_0_M04_AXI_WREADY,
+      s00_axi_wstrb(3 downto 0) => smartconnect_0_M04_AXI_WSTRB(3 downto 0),
+      s00_axi_wvalid => smartconnect_0_M04_AXI_WVALID,
+      worker_ack => bram_arbiter_0_worker3_ack,
+      worker_address(31 downto 0) => generation_worker_2_worker_address(31 downto 0),
+      worker_data_in(31 downto 0) => bram_arbiter_0_worker3_data_out(31 downto 0),
+      worker_data_out(31 downto 0) => generation_worker_2_worker_data_out(31 downto 0),
+      worker_request => generation_worker_2_worker_request,
+      worker_rw => generation_worker_2_worker_rw
     );
 processing_system7_0: component design_1_processing_system7_0_0
      port map (
@@ -788,6 +1025,44 @@ smartconnect_0: component design_1_smartconnect_0_0
       M02_AXI_wready => smartconnect_0_M02_AXI_WREADY,
       M02_AXI_wstrb(3 downto 0) => smartconnect_0_M02_AXI_WSTRB(3 downto 0),
       M02_AXI_wvalid => smartconnect_0_M02_AXI_WVALID,
+      M03_AXI_araddr(3 downto 0) => smartconnect_0_M03_AXI_ARADDR(3 downto 0),
+      M03_AXI_arprot(2 downto 0) => smartconnect_0_M03_AXI_ARPROT(2 downto 0),
+      M03_AXI_arready => smartconnect_0_M03_AXI_ARREADY,
+      M03_AXI_arvalid => smartconnect_0_M03_AXI_ARVALID,
+      M03_AXI_awaddr(3 downto 0) => smartconnect_0_M03_AXI_AWADDR(3 downto 0),
+      M03_AXI_awprot(2 downto 0) => smartconnect_0_M03_AXI_AWPROT(2 downto 0),
+      M03_AXI_awready => smartconnect_0_M03_AXI_AWREADY,
+      M03_AXI_awvalid => smartconnect_0_M03_AXI_AWVALID,
+      M03_AXI_bready => smartconnect_0_M03_AXI_BREADY,
+      M03_AXI_bresp(1 downto 0) => smartconnect_0_M03_AXI_BRESP(1 downto 0),
+      M03_AXI_bvalid => smartconnect_0_M03_AXI_BVALID,
+      M03_AXI_rdata(31 downto 0) => smartconnect_0_M03_AXI_RDATA(31 downto 0),
+      M03_AXI_rready => smartconnect_0_M03_AXI_RREADY,
+      M03_AXI_rresp(1 downto 0) => smartconnect_0_M03_AXI_RRESP(1 downto 0),
+      M03_AXI_rvalid => smartconnect_0_M03_AXI_RVALID,
+      M03_AXI_wdata(31 downto 0) => smartconnect_0_M03_AXI_WDATA(31 downto 0),
+      M03_AXI_wready => smartconnect_0_M03_AXI_WREADY,
+      M03_AXI_wstrb(3 downto 0) => smartconnect_0_M03_AXI_WSTRB(3 downto 0),
+      M03_AXI_wvalid => smartconnect_0_M03_AXI_WVALID,
+      M04_AXI_araddr(3 downto 0) => smartconnect_0_M04_AXI_ARADDR(3 downto 0),
+      M04_AXI_arprot(2 downto 0) => smartconnect_0_M04_AXI_ARPROT(2 downto 0),
+      M04_AXI_arready => smartconnect_0_M04_AXI_ARREADY,
+      M04_AXI_arvalid => smartconnect_0_M04_AXI_ARVALID,
+      M04_AXI_awaddr(3 downto 0) => smartconnect_0_M04_AXI_AWADDR(3 downto 0),
+      M04_AXI_awprot(2 downto 0) => smartconnect_0_M04_AXI_AWPROT(2 downto 0),
+      M04_AXI_awready => smartconnect_0_M04_AXI_AWREADY,
+      M04_AXI_awvalid => smartconnect_0_M04_AXI_AWVALID,
+      M04_AXI_bready => smartconnect_0_M04_AXI_BREADY,
+      M04_AXI_bresp(1 downto 0) => smartconnect_0_M04_AXI_BRESP(1 downto 0),
+      M04_AXI_bvalid => smartconnect_0_M04_AXI_BVALID,
+      M04_AXI_rdata(31 downto 0) => smartconnect_0_M04_AXI_RDATA(31 downto 0),
+      M04_AXI_rready => smartconnect_0_M04_AXI_RREADY,
+      M04_AXI_rresp(1 downto 0) => smartconnect_0_M04_AXI_RRESP(1 downto 0),
+      M04_AXI_rvalid => smartconnect_0_M04_AXI_RVALID,
+      M04_AXI_wdata(31 downto 0) => smartconnect_0_M04_AXI_WDATA(31 downto 0),
+      M04_AXI_wready => smartconnect_0_M04_AXI_WREADY,
+      M04_AXI_wstrb(3 downto 0) => smartconnect_0_M04_AXI_WSTRB(3 downto 0),
+      M04_AXI_wvalid => smartconnect_0_M04_AXI_WVALID,
       S00_AXI_araddr(31 downto 0) => processing_system7_0_M_AXI_GP0_ARADDR(31 downto 0),
       S00_AXI_arburst(1 downto 0) => processing_system7_0_M_AXI_GP0_ARBURST(1 downto 0),
       S00_AXI_arcache(3 downto 0) => processing_system7_0_M_AXI_GP0_ARCACHE(3 downto 0),
