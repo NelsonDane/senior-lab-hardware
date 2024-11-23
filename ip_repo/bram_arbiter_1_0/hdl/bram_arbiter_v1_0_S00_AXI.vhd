@@ -5,8 +5,6 @@ use ieee.numeric_std.all;
 entity bram_arbiter_v1_0_S00_AXI is
 	generic (
 		-- Users to add parameters here
-		BRAM_SIZE : integer := 1024;
-		BRAM_ADDR_WIDTH : integer := 32;
 		BRAM_WIDTH : integer := 32;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
@@ -21,12 +19,26 @@ entity bram_arbiter_v1_0_S00_AXI is
 		-- Worker 1 Signals
 		worker1_request : in std_logic;
 		worker1_rw : in std_logic;
-		worker1_address : in std_logic_vector(31 downto 0);
-		worker1_data_in : in std_logic_vector(31 downto 0);
-		worker1_data_out : out std_logic_vector(31 downto 0);
+		worker1_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker1_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker1_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 		worker1_ack : out std_logic;
+		-- Worker 2 Signals
+		worker2_request : in std_logic;
+		worker2_rw : in std_logic;
+		worker2_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker2_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker2_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker2_ack : out std_logic;
+		-- Worker 3 Signals
+		worker3_request : in std_logic;
+		worker3_rw : in std_logic;
+		worker3_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker3_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker3_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker3_ack : out std_logic;
 		-- BRAM Interface
-		addrb : out std_logic_vector(BRAM_ADDR_WIDTH-1 downto 0);
+		addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 		clkb : out std_logic;
 		dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 		doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
@@ -137,6 +149,9 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 	signal aw_en	: std_logic;
 
 	component bram_arbiter is
+		generic (
+			BRAM_WIDTH : integer := BRAM_WIDTH
+		);
 		port(
 			clk : in std_logic;
 			reset : in std_logic;
@@ -144,21 +159,28 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 			-- Worker 1 Signals
 			worker1_request : in std_logic;
 			worker1_rw : in std_logic;
-			worker1_address : in std_logic_vector(31 downto 0);
-			worker1_data_in : in std_logic_vector(31 downto 0);
-			worker1_data_out : out std_logic_vector(31 downto 0);
+			worker1_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker1_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker1_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 			worker1_ack : out std_logic;
 			-- Worker 2 Signals
 			worker2_request : in std_logic;
 			worker2_rw : in std_logic;
-			worker2_address : in std_logic_vector(31 downto 0);
-			worker2_data_in : in std_logic_vector(31 downto 0);
-			worker2_data_out : out std_logic_vector(31 downto 0);
+			worker2_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker2_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker2_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 			worker2_ack : out std_logic;
+			-- Worker 3 Signals
+			worker3_request : in std_logic;
+			worker3_rw : in std_logic;
+			worker3_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker3_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker3_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+			worker3_ack : out std_logic;
 			-- BRAM Interface
-			addrb : out std_logic_vector(31 downto 0);
-			dinb : out std_logic_vector(31 downto 0);
-			doutb : in std_logic_vector(31 downto 0);
+			addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+			dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+			doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
 			rstb : out std_logic;
 			web : out std_logic_vector(3 downto 0);
 			rstb_busy : in std_logic;
@@ -434,6 +456,9 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 
 	-- Add user logic here
 	BRAM_LOGIC : bram_arbiter
+	generic map (
+		BRAM_WIDTH => BRAM_WIDTH
+	)
 	port map (
 		clk => S_AXI_ACLK,
 		reset => '0',
@@ -446,12 +471,19 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 		worker1_data_out => worker1_data_out,
 		worker1_ack => worker1_ack,
 		-- Worker 2 Signals
-		worker2_request => '0',
-		worker2_rw => '0',
-		worker2_address => (others => '0'),
-		worker2_data_in => (others => '0'),
-		worker2_data_out => open,
-		worker2_ack => open,
+		worker2_request => worker2_request,
+		worker2_rw => worker2_rw,
+		worker2_address => worker2_address,
+		worker2_data_in => worker2_data_in,
+		worker2_data_out => worker2_data_out,
+		worker2_ack => worker2_ack,
+		-- Worker 3 Signals
+		worker3_request => worker3_request,
+		worker3_rw => worker3_rw,
+		worker3_address => worker3_address,
+		worker3_data_in => worker3_data_in,
+		worker3_data_out => worker3_data_out,
+		worker3_ack => worker3_ack,
 		-- BRAM Interface
 		addrb => addrb,
 		dinb => dinb,
