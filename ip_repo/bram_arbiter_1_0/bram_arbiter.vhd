@@ -26,7 +26,8 @@ Port (
     doutb : in std_logic_vector(31 downto 0);
     rstb : out std_logic;
     web : out std_logic_vector(3 downto 0);
-    rstb_busy : in std_logic
+    rstb_busy : in std_logic;
+    READ_BRAM_WAIT_CONSTANT : in integer
 );
 end bram_arbiter;
 
@@ -53,8 +54,7 @@ architecture Behavioral of bram_arbiter is
     end function;
 
     -- Number of cycles to wait for BRAM read
-    -- In testing it was 5-6 but 10 is a safe value
-    signal READ_BRAM_WAIT_CONSTANT : integer := 10;
+    -- signal READ_BRAM_WAIT_CONSTANT_2 : integer := 1;
     signal read_bram_wait_counter : integer := 0;
 
 begin
@@ -72,6 +72,7 @@ begin
                     worker2_ack <= '0';
                     read_bram_wait_counter <= 0;
                     web <= "0000";
+                    dinb <= (others => '0');
                     -- Round Robin Arbiter
                     if rstb_busy = '0' then
                         if worker1_request = '1' then
@@ -83,24 +84,28 @@ begin
                 when GRANT_WORKER_1 =>
                     arbiter_state <= state_to_status(current_state);
                     addrb <= worker1_address;
-                    worker1_ack <= '1';
                     worker2_ack <= '0';
+                    worker1_data_out <= doutb;
                     if worker1_rw = '1' then
                         -- Write to BRAM
                         dinb <= worker1_data_in;
                         web <= "1111";
+                        if doutb = worker1_data_in then
+                            worker1_ack <= '1';
+                        end if;
                     else
                         web <= "0000";
                         -- Read from BRAM after waiting
                         if read_bram_wait_counter < READ_BRAM_WAIT_CONSTANT then
                             read_bram_wait_counter <= read_bram_wait_counter + 1;
                         else
-                            worker1_data_out <= doutb;
+                            worker1_ack <= '1';
                         end if;
                     end if;
                     if worker1_request = '0' then
                         current_state <= IDLE;
                         worker1_ack <= '0';
+                        read_bram_wait_counter <= 0;
                     end if;
                 when GRANT_WORKER_2 =>
                     arbiter_state <= state_to_status(current_state);
@@ -128,4 +133,6 @@ begin
             end case;
         end if;
     end process;
+
+    -- worker1_data_out <= worker1_data_out_signal;
 end Behavioral;
