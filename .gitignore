@@ -1,14 +1,14 @@
-*.Xil
-*.cache
-*.gen
-*.hw
-*.ip_user_files
-*.runs
-*.sim
-*.srcs
-*.tmp
+# Vivado
+senior_lab_hw
+*edit*
 *.log
 *.jou
+*.xpr
+
+# Vitis
+*.analytics
+*.lock
+*.metadata
 
 .vscode/
 
