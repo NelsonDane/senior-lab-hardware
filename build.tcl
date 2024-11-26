@@ -541,3 +541,11 @@ move_dashboard_gadget -name {drc_1} -row 2 -col 0
 move_dashboard_gadget -name {timing_1} -row 0 -col 1
 move_dashboard_gadget -name {utilization_2} -row 1 -col 1
 move_dashboard_gadget -name {methodology_1} -row 2 -col 1
+
+# Create block design
+source $origin_dir/design_1.tcl
+
+# Generate wrapper
+set design_name [get_bd_designs]
+make_wrapper -files [get_files $design_name.bd] -top -import
+
