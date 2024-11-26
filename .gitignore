@@ -4,6 +4,7 @@ senior_lab_hw
 *.log
 *.jou
 *.xpr
+*.Xil
 
 # Vitis
 *.analytics
