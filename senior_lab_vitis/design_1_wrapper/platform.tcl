@@ -249,3 +249,21 @@ platform generate
 platform config -updatehw {/home/ndane/Desktop/senior_lab_hw/design_1_wrapper.xsa}
 platform generate -domains 
 platform clean
+platform generate design_1_wrapper 
+platform generate
+platform active {design_1_wrapper}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate
+platform clean
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 

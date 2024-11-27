@@ -8,13 +8,14 @@
 XBram Bram;
 #define BRAM_ARBITER_WAIT_COUNT 2
 #define WORKER_BRAM_ADDRESS_OFFSET 12
-#define WORKER_BRAM_SIZE 12
+#define WORKER_BRAM_SIZE 16
 #define NUMBER_OF_WORKERS 3
+#define FRACTIONAL_BITS 16
 
 
 void dump_bram(XBram *Bram) {
     printf("BRAM Dump\n\r");
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 18; i++) {
         int32_t data = XBram_ReadReg(XPAR_BRAM_0_BASEADDR, i * 4);
         printf("BRAM[%d]: %X\n\r", i*4, data);
     }
@@ -28,7 +29,7 @@ int reset_worker(volatile uint32_t *workerReg, int32_t workerBaseAddress, int wo
     workerReg[0] = 0x1; // Assert Reset
     workerReg[0] = 0x2; // Deassert Reset
     int count = 0;
-    while (XBram_ReadReg(workerBaseAddress, 4) != 0xDEADBEEF) {
+    while (XBram_ReadReg(workerBaseAddress, 12) != 0xDEADBEEF) {
         printf("Waiting for Worker %d to Reset\n\r", worker_num);
         printf("Worker %d State: %X\n\r", worker_num, workerReg[3]);
         sleep(0.1);
@@ -53,6 +54,20 @@ int write_bram_data(int32_t baseAddress, int32_t data) {
     return 0;
 }
 
+// Fixed-point conversion math
+int32_t double_to_fixed(double value) {
+    int32_t result = (int32_t)(value * (1 << FRACTIONAL_BITS));
+    printf("Double: %f, Fixed: %X\n\r", value, result);
+    return result;
+}
+
+double fixed_to_double(int32_t value) {
+    double result = (double)value / (1 << FRACTIONAL_BITS);
+    printf("Fixed: %X, Double: %f\n\r", value, result);
+    return result;
+}
+
+
 int main()
 {
     //
@@ -68,7 +83,7 @@ int main()
     printf("Initializing BRAM\n\r");
 	XBram_Config *BRAMConfigPtr;
     BRAMConfigPtr = XBram_LookupConfig(XPAR_BRAM_0_DEVICE_ID);
-    int Status = XBram_CfgInitialize(&Bram, BRAMConfigPtr,BRAMConfigPtr->CtrlBaseAddress);
+    int Status = XBram_CfgInitialize(&Bram, BRAMConfigPtr, BRAMConfigPtr->CtrlBaseAddress);
     if (Status != XST_SUCCESS) {
         printf("BRAM Initialization Failed: %d\n", Status);
     	return XST_FAILURE;
@@ -133,22 +148,39 @@ int main()
     //
     // Ready to receive and process instructions
     // This is the part that loops as we send/receive instructions
-    for (int j = 0; j < 2; j++) {
-        for (int i = 0; i < 3; i++) {
-            int8_t x = 10 + i + j;
-            int8_t y = 20 + i + j;
-            int8_t z = 30 + i + j;
-            int8_t opcode = 68 + i + j;
-            int32_t instructions = ((x & 0xFF) << 24) | ((y & 0xFF) << 16) | ((z & 0xFF) << 8) | (opcode & 0xFF);
-            printf("Instructions %d: %X\n\r", i+1, instructions);
+    for (int j = 0; j < 1; j++) {
+        for (int i = 0; i < NUMBER_OF_WORKERS; i++) {
+            // Receive these from the host
+            int8_t x = 3;
+            int8_t y = 4;
+            int8_t z = 5;
+            int8_t opcode = 13+i;
+            int32_t coordinates = ((x & 0xFF) << 24) | ((y & 0xFF) << 16) | ((z & 0xFF) << 8) | (opcode & 0xFF);
+            printf("Coordinates %d: %d %d %d %d\n\r", i+1, x, y, z, opcode);
+            // Instruction Data (high and low)
+            int32_t instructions_low = double_to_fixed(-0.1);
+            int32_t instructions_high = double_to_fixed(0.5);
+            printf("Instructions X: %X\n\r", instructions_low);
+            printf("Instructions Y: %X\n\r", instructions_high);
             // Ready to Start so Write Instructions
-            int write_result = write_bram_data(workerAddresses[i], instructions);
+            int write_result = write_bram_data(workerAddresses[i], coordinates);
             if (write_result != 0) {
-                printf("Failed to Write Instructions %d\n\r", i+1);
+                printf("Failed to Write Coordinates %d\n\r", i+1);
+                return 1;
+            }
+            printf("Coordinates Written\n\r");
+            write_result = write_bram_data(workerAddresses[i]+4, instructions_low);
+            if (write_result != 0) {
+                printf("Failed to Write Instructions Low %d\n\r", i+1);
+                return 1;
+            }
+            write_result = write_bram_data(workerAddresses[i]+8, instructions_high);
+            if (write_result != 0) {
+                printf("Failed to Write Instructions High %d\n\r", i+1);
                 return 1;
             }
         }
-        printf("Instructions Written\n\r");
+        printf("Instructions Written to Workers\n\r");
 
         // Start Workers
         printf("Starting Workers\n\r");
@@ -156,40 +188,41 @@ int main()
         genWorker2Reg[0] = 0x0; // Assert Continue
         genWorker3Reg[0] = 0x0; // Assert Continue
         int worker1Done, worker2Done, worker3Done;
-        while (1) {
-            worker1Done = genWorker1Reg[3] == 9;
-            worker2Done = genWorker2Reg[3] == 9;
-            worker3Done = genWorker3Reg[3] == 9;
+        int count = 0;
+        while (count < 10) {
+            int finished_code = 11;
+            worker1Done = genWorker1Reg[3] == finished_code;
+            worker2Done = genWorker2Reg[3] == finished_code;
+            worker3Done = genWorker3Reg[3] == finished_code;
             if (worker1Done && worker2Done && worker3Done) {
                 break;
             }
-            printf("Worker 1 State: %X\n\r", genWorker1Reg[3]);
-            printf("Worker 2 State: %X\n\r", genWorker2Reg[3]);
-            printf("Worker 3 State: %X\n\r", genWorker3Reg[3]);
+            // printf("Worker 1 State: %X\n\r", genWorker1Reg[3]);
+            // printf("Worker 2 State: %X\n\r", genWorker2Reg[3]);
+            // printf("Worker 3 State: %X\n\r", genWorker3Reg[3]);
+            // printf("Worker 1 Data: %X\n\r", genWorker1Reg[2]);
+            // printf("Worker 2 Data: %X\n\r", genWorker2Reg[2]);
+            // printf("Worker 3 Data: %X\n\r", genWorker3Reg[2]);
             sleep(0.1);
+            count++;
         }
         printf("Workers Finished!\n\r");
-        int32_t resultData1 = XBram_ReadReg(genWorker1BaseAddress, 4);
-        int32_t resultData2 = XBram_ReadReg(genWorker2BaseAddress, 4);
-        int32_t resultData3 = XBram_ReadReg(genWorker3BaseAddress, 4);
+        int32_t resultData1 = XBram_ReadReg(genWorker1BaseAddress, WORKER_BRAM_SIZE-4);
+        int32_t resultData2 = XBram_ReadReg(genWorker2BaseAddress, WORKER_BRAM_SIZE-4);
+        int32_t resultData3 = XBram_ReadReg(genWorker3BaseAddress, WORKER_BRAM_SIZE-4);
         int32_t allResults[3] = {resultData1, resultData2, resultData3};
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < NUMBER_OF_WORKERS; i++) {
             printf("Raw Result %d: %X\n\r", i+1, allResults[i]);
-            int8_t resultX = (int8_t)((allResults[i] >> 24) & 0xFF);
-            int8_t resultY = (int8_t)((allResults[i] >> 16) & 0xFF);
-            int8_t resultZ = (int8_t)((allResults[i] >> 8) & 0xFF);
-            int8_t resultOpcode = (int8_t)(allResults[i] & 0xFF);
-            printf("Clean Result %d: %d %d %d %d\n\r", i+1, resultX, resultY, resultZ, resultOpcode);
+            printf("Clean Result %d: %f\n\r", i+1, fixed_to_double(allResults[i]));
         }
-        //dump_bram(&Bram);
         // Reset Workers
-        int reset_result1 = reset_worker(genWorker1Reg, genWorker1BaseAddress, 1);
-        int reset_result2 = reset_worker(genWorker2Reg, genWorker2BaseAddress, 2);
-        int reset_result3 = reset_worker(genWorker3Reg, genWorker3BaseAddress, 3);
-        if (reset_result1 != 0 || reset_result2 != 0 || reset_result3 != 0) {
-            printf("Failed to Reset Workers\n\r");
-            return 1;
-        }
+        // int reset_result1 = reset_worker(genWorker1Reg, genWorker1BaseAddress, 1);
+        // int reset_result2 = reset_worker(genWorker2Reg, genWorker2BaseAddress, 2);
+        // int reset_result3 = reset_worker(genWorker3Reg, genWorker3BaseAddress, 3);
+        // if (reset_result1 != 0 || reset_result2 != 0 || reset_result3 != 0) {
+        //     printf("Failed to Reset Workers\n\r");
+        //     return 1;
+        // }
     }
     dump_bram(&Bram);
     printf("All Instructions Processed\n\r");

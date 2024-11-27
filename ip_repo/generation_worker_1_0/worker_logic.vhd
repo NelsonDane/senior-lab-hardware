@@ -15,7 +15,9 @@ use IEEE.NUMERIC_STD.ALL;
 -- Seed Low Address: 0x40000000
 -- Seed High Address: 0x40000004
 -- Coords Address: bram_address
--- Results Address: bram_address + 4
+-- Instruction 1 Address: bram_address + 4
+-- Instruction 2 Address: bram_address + 8
+-- Results Address: bram_address + 12
 
 entity worker_logic is
     Generic (
@@ -29,6 +31,7 @@ entity worker_logic is
         bram_address : in STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
         worker_read_data : out STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
         should_continue_manager : in STD_LOGIC;
+        fractional_bits : in integer;
         -- Arbiter Signals
         worker_request : out STD_LOGIC;
         worker_address : out STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
@@ -40,6 +43,18 @@ entity worker_logic is
 end worker_logic;
 
 architecture Behavioral of worker_logic is
+    component instructions is
+        generic (
+            WIDTH: integer := 32
+        );
+        Port (
+            opcode: in std_logic_vector(7 downto 0);
+            x: in std_logic_vector(WIDTH-1 downto 0);
+            y: in std_logic_vector(WIDTH-1 downto 0);
+            result: out std_logic_vector(WIDTH-1 downto 0);
+            result_ready: out std_logic
+        );
+    end component;
 
     -- States
     type state_type is (
@@ -48,6 +63,8 @@ architecture Behavioral of worker_logic is
         READING_SEED_LOW,
         READING_SEED_HIGH,
         READING_COORDS,
+        READING_INSTRUCTION_1,
+        READING_INSTRUCTION_2,
         READY,
         WORKING,
         ERROR_STATE,
@@ -63,27 +80,45 @@ architecture Behavioral of worker_logic is
             when READING_SEED_LOW => return "0010";
             when READING_SEED_HIGH => return "0011";
             when READING_COORDS => return "0100";
-            when READY => return "0101";
-            when WORKING => return "0110";
-            when ERROR_STATE => return "0111";
-            when WRITE_RESULTS => return "1000";
-            when FINISHED_WAITING => return "1001";
+            when READING_INSTRUCTION_1 => return "0101";
+            when READING_INSTRUCTION_2 => return "0110";
+            when READY => return "0111";
+            when WORKING => return "1000";
+            when ERROR_STATE => return "1001";
+            when WRITE_RESULTS => return "1010";
+            when FINISHED_WAITING => return "1011";
             when others => return "1111";
         end case;
     end function;
     -- Signals
-    signal seed_address_constant : STD_LOGIC_VECTOR(31 downto 0) := x"40000000";
+    constant SEED_ADDRESS_CONSTANT : STD_LOGIC_VECTOR(31 downto 0) := x"40000000";
     signal world_seed : STD_LOGIC_VECTOR(63 downto 0); -- int64_t
     signal x_coord : STD_LOGIC_VECTOR(7 downto 0); -- int8_t
     signal z_coord : STD_LOGIC_VECTOR(7 downto 0); -- int8_t
     signal y_coord : STD_LOGIC_VECTOR(7 downto 0); -- int8_t
     signal opcode : STD_LOGIC_VECTOR(7 downto 0); -- uint8_t
+    signal instruction_1 : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
+    signal instruction_2 : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
+    signal instruction_result : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
+    signal instruction_result_ready : STD_LOGIC := '0';
 
     signal has_acknowledged : STD_LOGIC := '0';
-    signal counter : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
-    signal temp_changer : INTEGER := 70;
 
 begin
+    -- Instructions
+    instruction_block: instructions
+    generic map (
+        WIDTH => 32
+    )
+    port map (
+        opcode => opcode,
+        x => instruction_1,
+        y => instruction_2,
+        result => instruction_result,
+        result_ready => instruction_result_ready
+    );
+
+    -- Worker Logic
     process(clk) is
     begin
         if reset = '1' then
@@ -118,7 +153,7 @@ begin
                             worker_request <= '1';
                             worker_rw <= '1';
                             worker_data_out <= x"DEADBEEF";
-                            worker_address <= std_logic_vector(unsigned(bram_address) + 4);
+                            worker_address <= std_logic_vector(unsigned(bram_address) + 12);
                         end if;
                     end if;
                 -- Seed is split into two 32-bit values
@@ -138,7 +173,7 @@ begin
                         else
                             worker_request <= '1';
                             worker_rw <= '0';
-                            worker_address <= seed_address_constant;
+                            worker_address <= SEED_ADDRESS_CONSTANT;
                         end if;
                     end if;
                 when READING_SEED_HIGH =>
@@ -157,7 +192,7 @@ begin
                         else
                             worker_request <= '1';
                             worker_rw <= '0';
-                            worker_address <= std_logic_vector(unsigned(seed_address_constant) + 4);
+                            worker_address <= std_logic_vector(unsigned(SEED_ADDRESS_CONSTANT) + 4);
                         end if;
                     end if;
                 -- Ready to receive instructions, wait for manager to write
@@ -182,20 +217,60 @@ begin
                     elsif worker_ack = '0' then
                         if has_acknowledged = '1' then
                             has_acknowledged <= '0';
-                            current_state <= WORKING;
+                            current_state <= READING_INSTRUCTION_1;
                         else
                             worker_request <= '1';
                             worker_rw <= '0';
                             worker_address <= bram_address;
                         end if;
                     end if;
+                -- Read the first instruction argument
+                when READING_INSTRUCTION_1 =>
+                    worker_state <= state_to_status(current_state);
+                    if worker_ack = '1' then
+                        if has_acknowledged = '0' then
+                            instruction_1 <= worker_data_in;
+                            worker_read_data <= worker_data_in;
+                            worker_request <= '0';
+                            has_acknowledged <= '1';
+                        end if;
+                    elsif worker_ack = '0' then
+                        if has_acknowledged = '1' then
+                            has_acknowledged <= '0';
+                            current_state <= READING_INSTRUCTION_2;
+                        else
+                            worker_request <= '1';
+                            worker_rw <= '0';
+                            worker_address <= std_logic_vector(unsigned(bram_address) + 4);
+                        end if;
+                    end if;
+                -- Read the second instruction argument
+                when READING_INSTRUCTION_2 =>
+                    worker_state <= state_to_status(current_state);
+                    if worker_ack = '1' then
+                        if has_acknowledged = '0' then
+                            instruction_2 <= worker_data_in;
+                            worker_read_data <= worker_data_in;
+                            worker_request <= '0';
+                            has_acknowledged <= '1';
+                        end if;
+                    elsif worker_ack = '0' then
+                        if has_acknowledged = '1' then
+                            has_acknowledged <= '0';
+                            current_state <= WORKING;
+                        else
+                            worker_request <= '1';
+                            worker_rw <= '0';
+                            worker_address <= std_logic_vector(unsigned(bram_address) + 8);
+                        end if;
+                    end if;
                 when WORKING =>
-                    -- For now, just increment all by 1 (to test)
-                    x_coord <= std_logic_vector(unsigned(x_coord) + 1);
-                    y_coord <= std_logic_vector(unsigned(y_coord) + 1);
-                    z_coord <= std_logic_vector(unsigned(z_coord) + 1);
-                    opcode <= std_logic_vector(unsigned(opcode) + 1);
-                    current_state <= WRITE_RESULTS;
+                    -- If result is ready is not all X's then write
+                    worker_state <= state_to_status(current_state);
+                    worker_read_data <= instruction_result;
+                    if instruction_result_ready = '1' then
+                        current_state <= WRITE_RESULTS;
+                    end if;
                 when WRITE_RESULTS =>
                     worker_state <= state_to_status(current_state);
                     if worker_ack = '1' then
@@ -210,8 +285,8 @@ begin
                         else
                             worker_request <= '1';
                             worker_rw <= '1';
-                            worker_data_out <= x_coord & y_coord & z_coord & opcode;
-                            worker_address <= std_logic_vector(unsigned(bram_address) + 4);
+                            worker_data_out <= instruction_result;
+                            worker_address <= std_logic_vector(unsigned(bram_address) + 12);
                         end if;
                     end if;
                 when FINISHED_WAITING =>
