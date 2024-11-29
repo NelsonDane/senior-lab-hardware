@@ -26,7 +26,8 @@ entity instructions is
         x: in std_logic_vector(WIDTH-1 downto 0);
         y: in std_logic_vector(WIDTH-1 downto 0);
         result: out std_logic_vector(WIDTH-1 downto 0);
-        result_ready: out std_logic
+        result_ready: out std_logic;
+        error_occurred: out std_logic
     );
 end instructions;
 
@@ -42,6 +43,8 @@ architecture Behavioral of instructions is
     signal x_fixed : signed(WIDTH-1 downto 0);
     signal y_fixed : signed(WIDTH-1 downto 0);
     signal result_fixed : signed(WIDTH-1 downto 0);
+    signal temp_result_add : signed(WIDTH downto 0); -- One extra bit for overflow
+    signal temp_result_mul : signed(WIDTH*2-1 downto 0); -- Double width for multiplication
 
 begin
     x_fixed <= signed(x);
@@ -60,34 +63,40 @@ begin
                     result_fixed <= x_fixed;
                 end if;
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 7: Absolute Value
             when "00000111" =>
                 result_fixed <= abs(x_fixed);
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 8: Square (x^2)
             when "00001000" =>
-                result_fixed <= resize((x_fixed * x_fixed) srl FRACTIONAL_BITS, WIDTH);
+                result_fixed <= resize(shift_right(signed(x_fixed * x_fixed), FRACTIONAL_BITS), WIDTH);
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 9: Cube (x^3)
             when "00001001" =>
-                result_fixed <= resize((x_fixed * x_fixed * x_fixed) srl FRACTIONAL_BITS, WIDTH);
+                result_fixed <= resize(shift_right(signed(resize(shift_right(signed(x_fixed * x_fixed), FRACTIONAL_BITS), WIDTH) * x_fixed), FRACTIONAL_BITS), WIDTH);
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 10: Half Negative
             when "00001010" =>
                 if x_fixed < 0 then
-                    result_fixed <= x_fixed / 2;
+                    result_fixed <= resize(signed(x_fixed / 2), WIDTH);
                 else
                     result_fixed <= x_fixed;
                 end if;
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 11: Quarter Negative
             when "00001011" =>
                 if x_fixed < 0 then
-                    result_fixed <= x_fixed / 4;
+                    result_fixed <= resize(signed(x_fixed / 4), WIDTH);
                 else
                     result_fixed <= x_fixed;
                 end if;
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 12: Squeeze
             when "00001100" =>
                 -- Not tested
@@ -110,14 +119,18 @@ begin
                     result_fixed <= resize((x_fixed / 2) - ((x_fixed * x_fixed * x_fixed) / DIV_24), WIDTH);
                 end if;
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 13: Add
             when "00001101" =>
-                result_fixed <= x_fixed + y_fixed;
+                -- No overflow check
+                result_fixed <= resize(signed(x_fixed + y_fixed), WIDTH);
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 14: Multiply
             when "00001110" =>
-                result_fixed <= resize((x_fixed * y_fixed) srl FRACTIONAL_BITS, WIDTH);
+                result_fixed <= resize(shift_right(signed(x_fixed * y_fixed), FRACTIONAL_BITS), WIDTH);
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 15: Min
             when "00001111" =>
                 if x_fixed < y_fixed then
@@ -126,6 +139,7 @@ begin
                     result_fixed <= y_fixed;
                 end if;
                 result_ready <= '1';
+                error_occurred <= '0';
             -- 16: Max
             when "00010000" =>
                 if x_fixed > y_fixed then
@@ -134,9 +148,12 @@ begin
                     result_fixed <= y_fixed;
                 end if;
                 result_ready <= '1';
+                error_occurred <= '0';
+            -- Invalid Opcode
             when others =>
                 result_fixed <= (others => '0');
-                result_ready <= '0';
+                result_ready <= '1';
+                error_occurred <= '1';
         end case;
     end process;
 

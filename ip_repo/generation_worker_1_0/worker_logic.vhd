@@ -52,7 +52,8 @@ architecture Behavioral of worker_logic is
             x: in std_logic_vector(WIDTH-1 downto 0);
             y: in std_logic_vector(WIDTH-1 downto 0);
             result: out std_logic_vector(WIDTH-1 downto 0);
-            result_ready: out std_logic
+            result_ready: out std_logic;
+            error_occurred: out std_logic
         );
     end component;
 
@@ -101,6 +102,7 @@ architecture Behavioral of worker_logic is
     signal instruction_2 : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
     signal instruction_result : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
     signal instruction_result_ready : STD_LOGIC := '0';
+    signal instruction_error_occurred : STD_LOGIC := '0';
 
     signal has_acknowledged : STD_LOGIC := '0';
 
@@ -115,7 +117,8 @@ begin
         x => instruction_1,
         y => instruction_2,
         result => instruction_result,
-        result_ready => instruction_result_ready
+        result_ready => instruction_result_ready,
+        error_occurred => instruction_error_occurred
     );
 
     -- Worker Logic
@@ -265,11 +268,14 @@ begin
                         end if;
                     end if;
                 when WORKING =>
-                    -- If result is ready is not all X's then write
                     worker_state <= state_to_status(current_state);
                     worker_read_data <= instruction_result;
                     if instruction_result_ready = '1' then
-                        current_state <= WRITE_RESULTS;
+                        if instruction_error_occurred = '1' then
+                            current_state <= ERROR_STATE;
+                        else
+                            current_state <= WRITE_RESULTS;
+                        end if;
                     end if;
                 when WRITE_RESULTS =>
                     worker_state <= state_to_status(current_state);
