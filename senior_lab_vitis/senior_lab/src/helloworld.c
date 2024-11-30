@@ -10,7 +10,8 @@ XBram Bram;
 #define WORKER_BRAM_SIZE 16
 #define NUMBER_OF_WORKERS 3
 #define FRACTIONAL_BITS 16
-
+#define WORKER_FINISHED_STATE 11
+#define WORKER_ERROR_STATE 9
 
 void dump_bram(XBram *Bram) {
     printf("BRAM Dump\n\r");
@@ -188,19 +189,24 @@ int main()
         int worker1Done, worker2Done, worker3Done;
         int count = 0;
         while (count < 10) {
-            int finished_code = 11;
-            worker1Done = genWorker1Reg[3] == finished_code;
-            worker2Done = genWorker2Reg[3] == finished_code;
-            worker3Done = genWorker3Reg[3] == finished_code;
+            worker1Done = genWorker1Reg[3] == WORKER_FINISHED_STATE || genWorker1Reg[3] == WORKER_ERROR_STATE;
+            worker2Done = genWorker2Reg[3] == WORKER_FINISHED_STATE || genWorker2Reg[3] == WORKER_ERROR_STATE;
+            worker3Done = genWorker3Reg[3] == WORKER_FINISHED_STATE || genWorker3Reg[3] == WORKER_ERROR_STATE;
             if (worker1Done && worker2Done && worker3Done) {
+                if (genWorker1Reg[3] == WORKER_ERROR_STATE) {
+                    printf("Worker 1 Error\n\r");
+                    printf("Worker 1 Data: %X\n\r", genWorker1Reg[2]);
+                }
+                if (genWorker2Reg[3] == WORKER_ERROR_STATE) {
+                    printf("Worker 2 Error\n\r");
+                    printf("Worker 2 Data: %X\n\r", genWorker2Reg[2]);
+                }
+                if (genWorker3Reg[3] == WORKER_ERROR_STATE) {
+                    printf("Worker 3 Error\n\r");
+                    printf("Worker 3 Data: %X\n\r", genWorker3Reg[2]);
+                }
                 break;
             }
-            // printf("Worker 1 State: %X\n\r", genWorker1Reg[3]);
-            // printf("Worker 2 State: %X\n\r", genWorker2Reg[3]);
-            // printf("Worker 3 State: %X\n\r", genWorker3Reg[3]);
-            // printf("Worker 1 Data: %X\n\r", genWorker1Reg[2]);
-            // printf("Worker 2 Data: %X\n\r", genWorker2Reg[2]);
-            // printf("Worker 3 Data: %X\n\r", genWorker3Reg[2]);
             sleep(0.1);
             count++;
         }
