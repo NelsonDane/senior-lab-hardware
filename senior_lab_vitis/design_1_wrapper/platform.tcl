@@ -267,3 +267,23 @@ platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardwar
 platform generate -domains 
 platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
 platform generate -domains 
+platform active {design_1_wrapper}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform active {design_1_wrapper}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains standalone_ps7_cortexa9_0 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform generate -domains 
