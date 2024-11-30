@@ -6,7 +6,6 @@
 #include "sleep.h"
 
 XBram Bram;
-#define BRAM_ARBITER_WAIT_COUNT 2
 #define WORKER_BRAM_ADDRESS_OFFSET 12
 #define WORKER_BRAM_SIZE 16
 #define NUMBER_OF_WORKERS 3
@@ -97,8 +96,7 @@ int main()
     // [1] - READ_BRAM_WAIT_CONSTANT (integer)
     // [2] - Unused
     // [3] - Unused
-    volatile uint32_t *bramArbiter = (volatile uint32_t *) XPAR_BRAM_ARBITER_0_S00_AXI_BASEADDR;
-    bramArbiter[1] = BRAM_ARBITER_WAIT_COUNT; // Not sure if this is needed
+    // volatile uint32_t *bramArbiter = (volatile uint32_t *) XPAR_BRAM_ARBITER_0_S00_AXI_BASEADDR;
     // Init Generation Workers
     // [0] - Reset and Continue bits
     // [1] - Base Address

@@ -36,8 +36,7 @@ Port (
     doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
     rstb : out std_logic;
     web : out std_logic_vector(3 downto 0);
-    rstb_busy : in std_logic;
-    READ_BRAM_WAIT_CONSTANT : in integer
+    rstb_busy : in std_logic
 );
 end bram_arbiter;
 
@@ -65,7 +64,7 @@ architecture Behavioral of bram_arbiter is
     end function;
 
     -- Number of cycles to wait for BRAM read
-    -- signal READ_BRAM_WAIT_CONSTANT_2 : integer := 1;
+    constant READ_BRAM_WAIT_CONSTANT : integer := 2;
     signal read_bram_wait_counter : integer := 0;
 
 begin

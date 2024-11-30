@@ -183,8 +183,7 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 			doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
 			rstb : out std_logic;
 			web : out std_logic_vector(3 downto 0);
-			rstb_busy : in std_logic;
-			read_bram_wait_constant : in integer
+			rstb_busy : in std_logic
 		);
 	end component;
 
@@ -490,9 +489,7 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 		doutb => doutb,
 		rstb => rstb,
 		web => web,
-		rstb_busy => rstb_busy,
-		-- slv_reg1 is connected to the wait constant
-		READ_BRAM_WAIT_CONSTANT => to_integer(unsigned(slv_reg1))
+		rstb_busy => rstb_busy
 	);
 
 	clkb <= S_AXI_ACLK;
