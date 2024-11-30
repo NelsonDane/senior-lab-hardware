@@ -31,7 +31,6 @@ entity worker_logic is
         bram_address : in STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
         worker_read_data : out STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
         should_continue_manager : in STD_LOGIC;
-        fractional_bits : in integer;
         -- Arbiter Signals
         worker_request : out STD_LOGIC;
         worker_address : out STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
@@ -48,6 +47,8 @@ architecture Behavioral of worker_logic is
             WIDTH: integer := 32
         );
         Port (
+            clk: in std_logic;
+            reset: in std_logic;
             opcode: in std_logic_vector(7 downto 0);
             x: in std_logic_vector(WIDTH-1 downto 0);
             y: in std_logic_vector(WIDTH-1 downto 0);
@@ -100,10 +101,12 @@ architecture Behavioral of worker_logic is
     signal opcode : STD_LOGIC_VECTOR(7 downto 0); -- uint8_t
     signal instruction_1 : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
     signal instruction_2 : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
+    -- Instruction Signals
+    signal instruction_reset : STD_LOGIC := '1';
     signal instruction_result : STD_LOGIC_VECTOR(31 downto 0); -- int32_t
     signal instruction_result_ready : STD_LOGIC := '0';
     signal instruction_error_occurred : STD_LOGIC := '0';
-
+    -- Arbiter Signals
     signal has_acknowledged : STD_LOGIC := '0';
 
 begin
@@ -113,6 +116,8 @@ begin
         WIDTH => 32
     )
     port map (
+        clk => clk,
+        reset => instruction_reset,
         opcode => opcode,
         x => instruction_1,
         y => instruction_2,
@@ -131,6 +136,7 @@ begin
             worker_data_out <= (others => '0');
             worker_address <= (others => '0');
             has_acknowledged <= '0';
+            instruction_reset <= '1';
         elsif rising_edge(clk) then
             case current_state is
                 when IDLE =>
@@ -204,6 +210,7 @@ begin
                     if should_continue_manager = '0' then
                         current_state <= READING_COORDS;
                     end if;
+                    instruction_reset <= '1';
                 -- Read the coordinates/opcode (packed into a single 32-bit vector)
                 when READING_COORDS =>
                     worker_state <= state_to_status(current_state);
@@ -270,6 +277,8 @@ begin
                 when WORKING =>
                     worker_state <= state_to_status(current_state);
                     worker_read_data <= instruction_result;
+                    instruction_reset <= '0';
+                    -- Wait for instruction to complete
                     if instruction_result_ready = '1' then
                         if instruction_error_occurred = '1' then
                             current_state <= ERROR_STATE;
