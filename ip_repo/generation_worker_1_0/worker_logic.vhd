@@ -5,10 +5,18 @@ use IEEE.NUMERIC_STD.ALL;
 -- Logic to create the Minecraft Generation Worker
 -- States:
 -- 0: IDLE (Reset BRAM)
--- 1: READY (Wait for BRAM address)
--- 2: WORKING (Complete Instructions)
--- 3: ERROR/Failed (Reset BRAM ->IDLE)
--- 4: FINISHED (Wait for Manager to read data)
+-- 1: RESET_RESULTS (Reset Previous Results at BASE_ADDR + 12)
+-- 2: READING_SEED_LOW (Read Seed Low)
+-- 3: READING_SEED_HIGH (Read Seed High)
+-- 4: READING_COORDS (Read Coords/Opcode and unpack)
+-- 5: READING_INSTRUCTION_1 (Read First Instruction Argument)
+-- 6: READING_INSTRUCTION_2 (Read Second Instruction Argument)
+-- 7: READY (Ready to work, wait for manager to start)
+-- 8: WORKING (Performing Instruction)
+-- 9: ERROR_STATE (Error occurred, wait for manager to reset)
+-- 10: WRITE_RESULTS (Write Results to BRAM if successful)
+-- 11: FINISHED_WAITING (Finished, wait for manager to read results)
+
 
 -- Worker BRAM
 -- Constant Address: 0x40000000

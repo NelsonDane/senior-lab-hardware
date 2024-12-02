@@ -92,17 +92,7 @@ int main()
 
     // Setup Hardware (arbiter, workers, etc)
     printf("Initializing Hardware\n\r");
-    // Init BRAM Arbiter slv_regs
-    // [0] - State
-    // [1] - READ_BRAM_WAIT_CONSTANT (integer)
-    // [2] - Unused
-    // [3] - Unused
-    // volatile uint32_t *bramArbiter = (volatile uint32_t *) XPAR_BRAM_ARBITER_0_S00_AXI_BASEADDR;
     // Init Generation Workers
-    // [0] - Reset and Continue bits
-    // [1] - Base Address
-    // [2] - Data Read By Worker
-    // [3] - WorkerState
     volatile uint32_t *genWorker1Reg = (volatile uint32_t *) XPAR_GENERATION_WORKER_0_S00_AXI_BASEADDR;
     int32_t genWorker1BaseAddress = (int32_t)XPAR_BRAM_0_BASEADDR + WORKER_BRAM_ADDRESS_OFFSET;
     volatile uint32_t *genWorker2Reg = (volatile uint32_t *) XPAR_GENERATION_WORKER_1_S00_AXI_BASEADDR;
