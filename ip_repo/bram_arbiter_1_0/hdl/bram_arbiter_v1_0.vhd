@@ -36,6 +36,13 @@ entity bram_arbiter_v1_0 is
 		worker3_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
 		worker3_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 		worker3_ack : out std_logic;
+		-- Worker 4 Signals
+		worker4_request : in std_logic;
+		worker4_rw : in std_logic;
+		worker4_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker4_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker4_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		worker4_ack : out std_logic;
 		-- BRAM Interface
 		addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 		clkb : out std_logic;
@@ -116,6 +123,13 @@ architecture arch_imp of bram_arbiter_v1_0 is
 			worker3_data_in : in std_logic_vector(31 downto 0);
 			worker3_data_out : out std_logic_vector(31 downto 0);
 			worker3_ack : out std_logic;
+			-- Worker 4 Signals
+			worker4_request : in std_logic;
+			worker4_rw : in std_logic;
+			worker4_address : in std_logic_vector(31 downto 0);
+			worker4_data_in : in std_logic_vector(31 downto 0);
+			worker4_data_out : out std_logic_vector(31 downto 0);
+			worker4_ack : out std_logic;
 			-- BRAM Interface
 			addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
 			clkb : out std_logic;
@@ -182,6 +196,13 @@ bram_arbiter_v1_0_S00_AXI_inst : bram_arbiter_v1_0_S00_AXI
 		worker3_data_in => worker3_data_in,
 		worker3_data_out => worker3_data_out,
 		worker3_ack => worker3_ack,
+		-- Worker 4 Signals
+		worker4_request => worker4_request,
+		worker4_rw => worker4_rw,
+		worker4_address => worker4_address,
+		worker4_data_in => worker4_data_in,
+		worker4_data_out => worker4_data_out,
+		worker4_ack => worker4_ack,
 		-- BRAM Interface
 		addrb => addrb,
 		clkb => clkb,
