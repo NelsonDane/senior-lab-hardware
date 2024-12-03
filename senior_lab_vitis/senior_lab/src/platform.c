@@ -102,6 +102,8 @@ init_platform()
     /* psu_init();*/
     enable_caches();
     init_uart();
+    platform_setup_timer();
+ 	platform_setup_interrupts();
 }
 
 void

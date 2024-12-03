@@ -287,3 +287,78 @@ platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardwar
 platform generate -domains 
 platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
 platform generate -domains 
+platform generate design_1_wrapper 
+platform generate
+platform generate
+platform active {design_1_wrapper}
+domain active {zynq_fsbl}
+bsp reload
+domain active {standalone_ps7_cortexa9_0}
+bsp reload
+domain active {zynq_fsbl}
+bsp setlib -name lwip213 -ver 1.0
+bsp write
+bsp reload
+catch {bsp regenerate}
+platform generate -domains zynq_fsbl 
+domain active {standalone_ps7_cortexa9_0}
+bsp setlib -name lwip213 -ver 1.0
+bsp write
+bsp reload
+catch {bsp regenerate}
+platform generate -domains standalone_ps7_cortexa9_0 
+platform clean
+platform generate
+bsp reload
+domain active {zynq_fsbl}
+bsp reload
+domain active {standalone_ps7_cortexa9_0}
+bsp config lwip_dhcp "true"
+bsp write
+bsp reload
+catch {bsp regenerate}
+domain active {zynq_fsbl}
+bsp config lwip_dhcp "true"
+bsp write
+bsp reload
+catch {bsp regenerate}
+platform generate -domains standalone_ps7_cortexa9_0,zynq_fsbl 
+bsp reload
+bsp config dhcp_does_arp_check "true"
+bsp write
+bsp reload
+catch {bsp regenerate}
+domain active {standalone_ps7_cortexa9_0}
+bsp config dhcp_does_arp_check "true"
+bsp write
+bsp reload
+catch {bsp regenerate}
+platform generate -domains standalone_ps7_cortexa9_0,zynq_fsbl 
+platform active {design_1_wrapper}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+domain active {zynq_fsbl}
+bsp reload
+bsp write
+domain active {standalone_ps7_cortexa9_0}
+bsp reload
+bsp write
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+domain active {zynq_fsbl}
+domain active {zynq_fsbl}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+domain active {zynq_fsbl}
+bsp reload
+catch {bsp regenerate}
+domain active {standalone_ps7_cortexa9_0}
+bsp reload
+catch {bsp regenerate}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform active {design_1_wrapper}
+domain active {zynq_fsbl}
+bsp reload
+catch {bsp regenerate}
+domain active {standalone_ps7_cortexa9_0}
+bsp reload
+catch {bsp regenerate}
+platform generate

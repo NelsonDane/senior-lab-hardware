@@ -35,7 +35,12 @@
 
 #include "platform_config.h"
 
+#define ETH_LINK_DETECT_INTERVAL 4
+
 void init_platform();
 void cleanup_platform();
+
+// void platform_setup_timer();
+// void platform_enable_interrupts();
 
 #endif
