@@ -362,3 +362,40 @@ domain active {standalone_ps7_cortexa9_0}
 bsp reload
 catch {bsp regenerate}
 platform generate
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform clean
+platform active {design_1_wrapper}
+platform generate
+domain active {zynq_fsbl}
+bsp reload
+catch {bsp regenerate}
+domain active {standalone_ps7_cortexa9_0}
+bsp reload
+catch {bsp regenerate}
+platform clean
+platform generate
+platform active {design_1_wrapper}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+domain active {zynq_fsbl}
+domain active {zynq_fsbl}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform clean
+platform active {design_1_wrapper}
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+domain active {zynq_fsbl}
+bsp reload
+catch {bsp regenerate}
+domain active {standalone_ps7_cortexa9_0}
+bsp reload
+catch {bsp regenerate}
+platform generate
+platform clean
+platform config -updatehw {/home/ndane/Desktop/vivado_testing/senior-lab-hardware/design_1_wrapper.xsa}
+platform active {design_1_wrapper}
+domain active {zynq_fsbl}
+bsp reload
+catch {bsp regenerate}
+domain active {standalone_ps7_cortexa9_0}
+bsp reload
+catch {bsp regenerate}
+platform generate

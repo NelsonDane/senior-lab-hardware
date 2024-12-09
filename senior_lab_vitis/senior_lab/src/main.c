@@ -74,7 +74,7 @@ int main() {
     print_ip_settings(&ipaddr, &netmask, &gw);
     start_application();
     printf("Ethernet Initialized\n\r");
-    // int32_t x, y, z;
+    int32_t x, y, z;
     while (1) {
 		if (TcpFastTmrFlag) {
 			tcp_fasttmr();
@@ -87,16 +87,13 @@ int main() {
 		xemacif_input(echo_netif);
 		// transfer_data();
 
-        // Get worker states
-        // uint8_t workerStates[NUMBER_OF_WORKERS];
-        // get_worker_states(workerStates);
-        // for (int i = 0; i < NUMBER_OF_WORKERS; i++) {
-        //     int workerState = workerStates[i];
-        //     switch(workerState) {
-        //         case WORKER_IDLE_STATE:
-        //             // Worker is idle
-        //             break;
-        //         case WORKER_FINISHED_STATE:
+        // Check for instructions
+        // int instr_length = instruction_queue_length();
+        // if (instr_length > 0) {
+        //     printf("Processing %d instructions\n\r", instr_length);
+        //     for (int i = 0; i < instr_length; i++) {
+        //         Instruction instr = dequeue_instruction();
+        //         printf("Instruction: %d\n\r", instr.instruction_type);
 
         //     }
         // }
