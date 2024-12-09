@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 entity generation_worker_v1_0_S00_AXI is
 	generic (
 		-- Users to add parameters here
-		BRAM_WIDTH : integer := 32;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
 
@@ -17,12 +16,8 @@ entity generation_worker_v1_0_S00_AXI is
 	port (
 		-- Users to add ports here
 		-- Worker 1 Signals
-		worker_request : out std_logic;
-		worker_rw : out std_logic;
-		worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_ack : in std_logic;
+		bram_address : out STD_LOGIC_VECTOR(31 downto 0);
+        bram_data : in STD_LOGIC_VECTOR(32-1 downto 0);
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -91,7 +86,7 @@ end generation_worker_v1_0_S00_AXI;
 
 architecture arch_imp of generation_worker_v1_0_S00_AXI is
 	signal generation_worker_state : std_logic_vector(3 downto 0);
-	signal worker_read_data : std_logic_vector(BRAM_WIDTH-1 downto 0);
+	signal worker_read_data : std_logic_vector(32-1 downto 0);
 
 	-- AXI4LITE signals
 	signal axi_awaddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
@@ -127,23 +122,18 @@ architecture arch_imp of generation_worker_v1_0_S00_AXI is
 	signal aw_en	: std_logic;
 
     component worker_logic is
-		generic (
-			BRAM_WIDTH : integer := BRAM_WIDTH
-		);
         port(
-            clk : in STD_LOGIC;
-            reset : in STD_LOGIC;
-            bram_address : in STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
-            worker_state : out STD_LOGIC_VECTOR(3 downto 0);
-			worker_read_data : out STD_LOGIC_VECTOR(BRAM_WIDTH-1 downto 0);
-			should_continue_manager : in STD_LOGIC;
-			-- Arbiter Signals
-			worker_request : out std_logic;
-			worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker_rw : out std_logic;
-			worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker_ack : in std_logic
+            -- Worker Logic
+			clk : in STD_LOGIC;
+			reset : in STD_LOGIC;
+			worker_state : out STD_LOGIC_VECTOR(3 downto 0);
+			should_start : in STD_LOGIC;
+			coordinates : in STD_LOGIC_VECTOR(31 downto 0);
+			perlin : in STD_LOGIC_VECTOR(31 downto 0);
+			program_result : out STD_LOGIC_VECTOR(31 downto 0);
+			-- BRAM Signals
+			bram_address : out STD_LOGIC_VECTOR(31 downto 0);
+			bram_data : in STD_LOGIC_VECTOR(32-1 downto 0)
         );
     end component worker_logic;
 
@@ -382,13 +372,13 @@ begin
 	    loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB);
 	    case loc_addr is
 	      when b"00" =>
-	        reg_data_out <= slv_reg0;
+	        reg_data_out <= (slv_reg0'length downto 7 => '0') & generation_worker_state & slv_reg0(1 downto 0);
 	      when b"01" =>
 	        reg_data_out <= slv_reg1;
 	      when b"10" =>
-	        reg_data_out <= worker_read_data;
+	        reg_data_out <= slv_reg2;
 	      when b"11" =>
-	        reg_data_out <= (BRAM_WIDTH-1 downto generation_worker_state'length => '0') & generation_worker_state;
+	        reg_data_out <= slv_reg3;
 	      when others =>
 	        reg_data_out  <= (others => '0');
 	    end case;
@@ -414,24 +404,18 @@ begin
 
 	-- Add user logic here
     GEN_WORKER : worker_logic
-	generic map(
-		BRAM_WIDTH => BRAM_WIDTH
-	)
     port map(
 		-- Worker Logic
         clk => S_AXI_ACLK,
         reset => slv_reg0(0),
-        bram_address => slv_reg1,
 		worker_state => generation_worker_state,
-		worker_read_data => worker_read_data,
-		should_continue_manager => slv_reg0(1),
-		-- Arbiter
-		worker_request => worker_request,
-		worker_rw => worker_rw,
-		worker_address => worker_address,
-		worker_data_in => worker_data_in,
-		worker_data_out => worker_data_out,
-		worker_ack => worker_ack
+		should_start => slv_reg0(1),
+		coordinates => slv_reg1,
+		perlin => slv_reg2,
+		program_result => slv_reg3(31 downto 0),
+		-- BRAM Signals
+		bram_address => bram_address,
+		bram_data => worker_read_data
 	);
 	-- User logic ends
 

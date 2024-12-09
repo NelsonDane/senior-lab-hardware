@@ -19,7 +19,8 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity instructions is
     generic (
-        WIDTH: integer := 32
+        WIDTH: integer := 32;
+        FRACTIONAL_BITS: integer := 22
     );
     Port (
         clk: in std_logic;
@@ -55,7 +56,6 @@ architecture Behavioral of instructions is
     );
     signal current_state: state_type := IDLE;
     -- Constants
-    constant FRACTIONAL_BITS : integer := 16;
     constant MIN_CONSTANT : signed(WIDTH-1 downto 0) := to_signed(-1000000, WIDTH);
     constant MAX_CONSTANT : signed(WIDTH-1 downto 0) := to_signed(1000000, WIDTH);
     constant ONE : signed(WIDTH-1 downto 0) := to_signed(1, WIDTH);
@@ -83,6 +83,7 @@ begin
             case current_state is
                 when IDLE =>
                     -- 1: Decode opcode
+                    result_ready <= '0';
                     case opcode is
                         when "00000010" =>
                             current_state <= CONSTANT_OP;
@@ -107,7 +108,8 @@ begin
                         when "00010000" =>
                             current_state <= MAX_OP;
                         when others =>
-                            current_state <= ERROR_OCCURRED_STATE;
+                            -- current_state <= ERROR_OCCURRED_STATE;
+                            current_state <= IDLE;
                     end case;
                 -- 2: Constant
                 when CONSTANT_OP =>
@@ -157,7 +159,6 @@ begin
                     end if;
                 -- 12: Squeeze
                 when SQUEEZE_OP =>
-                    -- Not tested
                     -- val = data[in]
                     -- if(val < -1)
                     -- val = -1
@@ -168,7 +169,6 @@ begin
                     -- b = val * val * val
                     -- b =/ 24
                     -- data[out] = a - b
-                    -- Clamp between -1 and 1
                     if x_fixed < NEG_ONE then
                         result_fixed <= resize(NEG_ONE sra 1, WIDTH) - resize(signed((NEG_ONE * (2**FRACTIONAL_BITS)) / DIV_24), WIDTH);
                     elsif x_fixed > ONE then

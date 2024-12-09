@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 entity generation_worker_v1_0 is
 	generic (
 		-- Users to add parameters here
-		BRAM_WIDTH : integer := 32;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
 
@@ -16,12 +15,8 @@ entity generation_worker_v1_0 is
 	);
 	port (
 		-- Users to add ports here
-		worker_request : out std_logic;
-		worker_rw : out std_logic;
-		worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_ack : in std_logic;
+		bram_address : out STD_LOGIC_VECTOR(31 downto 0);
+        bram_data : in STD_LOGIC_VECTOR(32-1 downto 0);
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -57,19 +52,14 @@ architecture arch_imp of generation_worker_v1_0 is
 	component generation_worker_v1_0_S00_AXI is
 		generic (
 		C_S_AXI_DATA_WIDTH	: integer	:= 32;
-		C_S_AXI_ADDR_WIDTH	: integer	:= 4;
+		C_S_AXI_ADDR_WIDTH	: integer	:= 4
 		-- User Generics
-		BRAM_WIDTH : integer := BRAM_WIDTH
 		-- User Generics ends
 		);
 		port (
 		-- User ports
-		worker_request : out std_logic;
-		worker_rw : out std_logic;
-		worker_address : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker_ack : in std_logic;
+		bram_address : out STD_LOGIC_VECTOR(31 downto 0);
+        bram_data : in STD_LOGIC_VECTOR(32-1 downto 0);
 		-- User ports ends
 		S_AXI_ACLK	: in std_logic;
 		S_AXI_ARESETN	: in std_logic;
@@ -101,19 +91,14 @@ begin
 generation_worker_v1_0_S00_AXI_inst : generation_worker_v1_0_S00_AXI
 	generic map (
 		C_S_AXI_DATA_WIDTH	=> C_S00_AXI_DATA_WIDTH,
-		C_S_AXI_ADDR_WIDTH	=> C_S00_AXI_ADDR_WIDTH,
+		C_S_AXI_ADDR_WIDTH	=> C_S00_AXI_ADDR_WIDTH
 		-- User Generics
-		BRAM_WIDTH => BRAM_WIDTH
 		-- User Generics ends
 	)
 	port map (
 		-- User ports
-		worker_request => worker_request,
-		worker_rw => worker_rw,
-		worker_address => worker_address,
-		worker_data_in => worker_data_in,
-		worker_data_out => worker_data_out,
-		worker_ack => worker_ack,
+		bram_address => bram_address,
+		bram_data => bram_data,
 		-- User ports ends
 		S_AXI_ACLK	=> s00_axi_aclk,
 		S_AXI_ARESETN	=> s00_axi_aresetn,

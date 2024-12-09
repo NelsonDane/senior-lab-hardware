@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 entity bram_arbiter_v1_0 is
 	generic (
 		-- Users to add parameters here
-        BRAM_WIDTH : integer := 32;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
 
@@ -15,39 +14,13 @@ entity bram_arbiter_v1_0 is
 	);
 	port (
 		-- Users to add ports here
-		-- Worker 1 Signals
-		worker1_request : in std_logic;
-		worker1_rw : in std_logic;
-		worker1_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker1_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker1_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker1_ack : out std_logic;
-		-- Worker 2 Signals
-		worker2_request : in std_logic;
-		worker2_rw : in std_logic;
-		worker2_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker2_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker2_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker2_ack : out std_logic;
-		-- Worker 3 Signals
-		worker3_request : in std_logic;
-		worker3_rw : in std_logic;
-		worker3_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker3_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker3_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker3_ack : out std_logic;
-		-- Worker 4 Signals
-		worker4_request : in std_logic;
-		worker4_rw : in std_logic;
-		worker4_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker4_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker4_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker4_ack : out std_logic;
+		worker_address : in std_logic_vector(31 downto 0);
+		bram_data_out : out std_logic_vector(32-1 downto 0);
 		-- BRAM Interface
-		addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		addrb : out std_logic_vector(31 downto 0);
 		clkb : out std_logic;
-		dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		dinb : out std_logic_vector(32-1 downto 0);
+		doutb : in std_logic_vector(32-1 downto 0);
 		enb : out std_logic;
 		rstb : out std_logic;
 		web : out std_logic_vector(3 downto 0);
@@ -97,44 +70,17 @@ architecture arch_imp of bram_arbiter_v1_0 is
 	component bram_arbiter_v1_0_S00_AXI is
 		generic (
 			C_S_AXI_DATA_WIDTH	: integer	:= 32;
-			C_S_AXI_ADDR_WIDTH	: integer	:= 4;
-			BRAM_WIDTH : integer := BRAM_WIDTH
+			C_S_AXI_ADDR_WIDTH	: integer	:= 4
 		);
 		port (
 			-- User ports
-			-- Worker 1 Signals
-			worker1_request : in std_logic;
-			worker1_rw : in std_logic;
-			worker1_address : in std_logic_vector(31 downto 0);
-			worker1_data_in : in std_logic_vector(31 downto 0);
-			worker1_data_out : out std_logic_vector(31 downto 0);
-			worker1_ack : out std_logic;
-			-- Worker 2 Signals
-			worker2_request : in std_logic;
-			worker2_rw : in std_logic;
-			worker2_address : in std_logic_vector(31 downto 0);
-			worker2_data_in : in std_logic_vector(31 downto 0);
-			worker2_data_out : out std_logic_vector(31 downto 0);
-			worker2_ack : out std_logic;
-			-- Worker 3 Signals
-			worker3_request : in std_logic;
-			worker3_rw : in std_logic;
-			worker3_address : in std_logic_vector(31 downto 0);
-			worker3_data_in : in std_logic_vector(31 downto 0);
-			worker3_data_out : out std_logic_vector(31 downto 0);
-			worker3_ack : out std_logic;
-			-- Worker 4 Signals
-			worker4_request : in std_logic;
-			worker4_rw : in std_logic;
-			worker4_address : in std_logic_vector(31 downto 0);
-			worker4_data_in : in std_logic_vector(31 downto 0);
-			worker4_data_out : out std_logic_vector(31 downto 0);
-			worker4_ack : out std_logic;
+			worker_address : in std_logic_vector(31 downto 0);
+			bram_data_out : out std_logic_vector(32-1 downto 0);
 			-- BRAM Interface
-			addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+			addrb : out std_logic_vector(31 downto 0);
 			clkb : out std_logic;
-			dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			dinb : out std_logic_vector(32-1 downto 0);
+			doutb : in std_logic_vector(32-1 downto 0);
 			enb : out std_logic;
 			rstb : out std_logic;
 			web : out std_logic_vector(3 downto 0);
@@ -170,39 +116,12 @@ begin
 bram_arbiter_v1_0_S00_AXI_inst : bram_arbiter_v1_0_S00_AXI
 	generic map (
 		C_S_AXI_DATA_WIDTH	=> C_S00_AXI_DATA_WIDTH,
-		C_S_AXI_ADDR_WIDTH	=> C_S00_AXI_ADDR_WIDTH,
-		BRAM_WIDTH => BRAM_WIDTH
+		C_S_AXI_ADDR_WIDTH	=> C_S00_AXI_ADDR_WIDTH
 	)
 	port map (
 		-- User ports
-		-- Worker 1 Signals
-		worker1_request => worker1_request,
-		worker1_rw => worker1_rw,
-		worker1_address => worker1_address,
-		worker1_data_in => worker1_data_in,
-		worker1_data_out => worker1_data_out,
-		worker1_ack => worker1_ack,
-		-- Worker 2 Signals
-		worker2_request => worker2_request,
-		worker2_rw => worker2_rw,
-		worker2_address => worker2_address,
-		worker2_data_in => worker2_data_in,
-		worker2_data_out => worker2_data_out,
-		worker2_ack => worker2_ack,
-		-- Worker 3 Signals
-		worker3_request => worker3_request,
-		worker3_rw => worker3_rw,
-		worker3_address => worker3_address,
-		worker3_data_in => worker3_data_in,
-		worker3_data_out => worker3_data_out,
-		worker3_ack => worker3_ack,
-		-- Worker 4 Signals
-		worker4_request => worker4_request,
-		worker4_rw => worker4_rw,
-		worker4_address => worker4_address,
-		worker4_data_in => worker4_data_in,
-		worker4_data_out => worker4_data_out,
-		worker4_ack => worker4_ack,
+		worker_address => worker_address,
+		bram_data_out => bram_data_out,
 		-- BRAM Interface
 		addrb => addrb,
 		clkb => clkb,

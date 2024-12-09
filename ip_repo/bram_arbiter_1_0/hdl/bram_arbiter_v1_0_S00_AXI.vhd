@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 entity bram_arbiter_v1_0_S00_AXI is
 	generic (
 		-- Users to add parameters here
-		BRAM_WIDTH : integer := 32;
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
 
@@ -16,39 +15,14 @@ entity bram_arbiter_v1_0_S00_AXI is
 	);
 	port (
 		-- Users to add ports here
-		-- Worker 1 Signals
-		worker1_request : in std_logic;
-		worker1_rw : in std_logic;
-		worker1_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker1_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker1_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker1_ack : out std_logic;
-		-- Worker 2 Signals
-		worker2_request : in std_logic;
-		worker2_rw : in std_logic;
-		worker2_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker2_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker2_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker2_ack : out std_logic;
-		-- Worker 3 Signals
-		worker3_request : in std_logic;
-		worker3_rw : in std_logic;
-		worker3_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker3_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker3_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker3_ack : out std_logic;
-		-- Worker 4 Signals
-		worker4_request : in std_logic;
-		worker4_rw : in std_logic;
-		worker4_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker4_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker4_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		worker4_ack : out std_logic;
+		-- Lead Worker Signals
+		worker_address : in std_logic_vector(31 downto 0);
+		bram_data_out : out std_logic_vector(32-1 downto 0);
 		-- BRAM Interface
-		addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
+		addrb : out std_logic_vector(31 downto 0);
 		clkb : out std_logic;
-		dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-		doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+		dinb : out std_logic_vector(32-1 downto 0);
+		doutb : in std_logic_vector(32-1 downto 0);
 		enb : out std_logic;
 		rstb : out std_logic;
 		web : out std_logic_vector(3 downto 0);
@@ -156,48 +130,18 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 	signal aw_en	: std_logic;
 
 	component bram_arbiter is
-		generic (
-			BRAM_WIDTH : integer := BRAM_WIDTH
-		);
 		port(
 			clk : in std_logic;
-			reset : in std_logic;
 			arbiter_state : out std_logic_vector(2 downto 0);
-			-- Worker 1 Signals
-			worker1_request : in std_logic;
-			worker1_rw : in std_logic;
-			worker1_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker1_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker1_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker1_ack : out std_logic;
-			-- Worker 2 Signals
-			worker2_request : in std_logic;
-			worker2_rw : in std_logic;
-			worker2_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker2_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker2_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker2_ack : out std_logic;
-			-- Worker 3 Signals
-			worker3_request : in std_logic;
-			worker3_rw : in std_logic;
-			worker3_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker3_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker3_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker3_ack : out std_logic;
-			-- Worker 4 Signals
-			worker4_request : in std_logic;
-			worker4_rw : in std_logic;
-			worker4_address : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker4_data_in : in std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker4_data_out : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			worker4_ack : out std_logic;
+			-- Lead Worker Signals
+			worker_address : in std_logic_vector(31 downto 0);
+			bram_data_out : out std_logic_vector(32-1 downto 0);
 			-- BRAM Interface
-			addrb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			dinb : out std_logic_vector(BRAM_WIDTH-1 downto 0);
-			doutb : in std_logic_vector(BRAM_WIDTH-1 downto 0);
+			addrb : out std_logic_vector(31 downto 0);
+			-- dinb : out std_logic_vector(64-1 downto 0);
+			doutb : in std_logic_vector(32-1 downto 0);
 			rstb : out std_logic;
-			web : out std_logic_vector(3 downto 0);
-			rstb_busy : in std_logic
+			web : out std_logic_vector(3 downto 0)
 		);
 	end component;
 
@@ -469,48 +413,15 @@ architecture arch_imp of bram_arbiter_v1_0_S00_AXI is
 
 	-- Add user logic here
 	BRAM_LOGIC : bram_arbiter
-	generic map (
-		BRAM_WIDTH => BRAM_WIDTH
-	)
 	port map (
 		clk => S_AXI_ACLK,
-		reset => '0',
 		arbiter_state => arbiter_state,
-		-- Worker 1 Signals
-		worker1_request => worker1_request,
-		worker1_rw => worker1_rw,
-		worker1_address => worker1_address,
-		worker1_data_in => worker1_data_in,
-		worker1_data_out => worker1_data_out,
-		worker1_ack => worker1_ack,
-		-- Worker 2 Signals
-		worker2_request => worker2_request,
-		worker2_rw => worker2_rw,
-		worker2_address => worker2_address,
-		worker2_data_in => worker2_data_in,
-		worker2_data_out => worker2_data_out,
-		worker2_ack => worker2_ack,
-		-- Worker 3 Signals
-		worker3_request => worker3_request,
-		worker3_rw => worker3_rw,
-		worker3_address => worker3_address,
-		worker3_data_in => worker3_data_in,
-		worker3_data_out => worker3_data_out,
-		worker3_ack => worker3_ack,
-		-- Worker 4 Signals
-		worker4_request => worker4_request,
-		worker4_rw => worker4_rw,
-		worker4_address => worker4_address,
-		worker4_data_in => worker4_data_in,
-		worker4_data_out => worker4_data_out,
-		worker4_ack => worker4_ack,
-		-- BRAM Interface
+		worker_address => worker_address,
+		bram_data_out => bram_data_out,
 		addrb => addrb,
-		dinb => dinb,
 		doutb => doutb,
 		rstb => rstb,
-		web => web,
-		rstb_busy => rstb_busy
+		web => web
 	);
 
 	clkb <= S_AXI_ACLK;
