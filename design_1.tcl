@@ -547,7 +547,7 @@ proc create_root_design { parentCell } {
   set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0 ]
   set_property -dict [list \
     CONFIG.PROTOCOL {AXI4LITE} \
-    CONFIG.RD_CMD_OPTIMIZATION {0} \
+    CONFIG.RD_CMD_OPTIMIZATION {1} \
     CONFIG.SINGLE_PORT_BRAM {1} \
     CONFIG.USE_ECC {0} \
   ] $axi_bram_ctrl_0
@@ -564,7 +564,7 @@ proc create_root_design { parentCell } {
   # Create instance: smartconnect_0, and set properties
   set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
   set_property -dict [list \
-    CONFIG.NUM_MI {5} \
+    CONFIG.NUM_MI {6} \
     CONFIG.NUM_SI {1} \
   ] $smartconnect_0
 
@@ -584,6 +584,9 @@ proc create_root_design { parentCell } {
   # Create instance: generation_worker_2, and set properties
   set generation_worker_2 [ create_bd_cell -type ip -vlnv user.org:user:generation_worker:1.0 generation_worker_2 ]
 
+  # Create instance: generation_worker_3, and set properties
+  set generation_worker_3 [ create_bd_cell -type ip -vlnv user.org:user:generation_worker:1.0 generation_worker_3 ]
+
   # Create interface connections
   connect_bd_intf_net -intf_net axi_bram_ctrl_0_BRAM_PORTA [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA] [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTA]
   connect_bd_intf_net -intf_net bram_arbiter_0_BRAM_PORTB [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTB] [get_bd_intf_pins bram_arbiter_0/BRAM_PORTB]
@@ -595,30 +598,15 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net smartconnect_0_M02_AXI [get_bd_intf_pins smartconnect_0/M02_AXI] [get_bd_intf_pins bram_arbiter_0/S00_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M03_AXI [get_bd_intf_pins smartconnect_0/M03_AXI] [get_bd_intf_pins generation_worker_1/S00_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M04_AXI [get_bd_intf_pins smartconnect_0/M04_AXI] [get_bd_intf_pins generation_worker_2/S00_AXI]
+  connect_bd_intf_net -intf_net smartconnect_0_M05_AXI [get_bd_intf_pins smartconnect_0/M05_AXI] [get_bd_intf_pins generation_worker_3/S00_AXI]
 
   # Create port connections
   connect_bd_net -net blk_mem_gen_0_rstb_busy [get_bd_pins blk_mem_gen_0/rstb_busy] [get_bd_pins bram_arbiter_0/rstb_busy]
-  connect_bd_net -net bram_arbiter_0_worker1_ack [get_bd_pins bram_arbiter_0/worker1_ack] [get_bd_pins generation_worker_0/worker_ack]
-  connect_bd_net -net bram_arbiter_0_worker1_data_out [get_bd_pins bram_arbiter_0/worker1_data_out] [get_bd_pins generation_worker_0/worker_data_in]
-  connect_bd_net -net bram_arbiter_0_worker2_ack [get_bd_pins bram_arbiter_0/worker2_ack] [get_bd_pins generation_worker_1/worker_ack]
-  connect_bd_net -net bram_arbiter_0_worker2_data_out [get_bd_pins bram_arbiter_0/worker2_data_out] [get_bd_pins generation_worker_1/worker_data_in]
-  connect_bd_net -net bram_arbiter_0_worker3_ack [get_bd_pins bram_arbiter_0/worker3_ack] [get_bd_pins generation_worker_2/worker_ack]
-  connect_bd_net -net bram_arbiter_0_worker3_data_out [get_bd_pins bram_arbiter_0/worker3_data_out] [get_bd_pins generation_worker_2/worker_data_in]
-  connect_bd_net -net generation_worker_0_worker1_data_out [get_bd_pins generation_worker_0/worker_data_out] [get_bd_pins bram_arbiter_0/worker1_data_in]
-  connect_bd_net -net generation_worker_0_worker1_request [get_bd_pins generation_worker_0/worker_request] [get_bd_pins bram_arbiter_0/worker1_request]
-  connect_bd_net -net generation_worker_0_worker_address [get_bd_pins generation_worker_0/worker_address] [get_bd_pins bram_arbiter_0/worker1_address]
-  connect_bd_net -net generation_worker_0_worker_rw [get_bd_pins generation_worker_0/worker_rw] [get_bd_pins bram_arbiter_0/worker1_rw]
-  connect_bd_net -net generation_worker_1_worker_address [get_bd_pins generation_worker_1/worker_address] [get_bd_pins bram_arbiter_0/worker2_address]
-  connect_bd_net -net generation_worker_1_worker_data_out [get_bd_pins generation_worker_1/worker_data_out] [get_bd_pins bram_arbiter_0/worker2_data_in]
-  connect_bd_net -net generation_worker_1_worker_request [get_bd_pins generation_worker_1/worker_request] [get_bd_pins bram_arbiter_0/worker2_request]
-  connect_bd_net -net generation_worker_1_worker_rw [get_bd_pins generation_worker_1/worker_rw] [get_bd_pins bram_arbiter_0/worker2_rw]
-  connect_bd_net -net generation_worker_2_worker_address [get_bd_pins generation_worker_2/worker_address] [get_bd_pins bram_arbiter_0/worker3_address]
-  connect_bd_net -net generation_worker_2_worker_data_out [get_bd_pins generation_worker_2/worker_data_out] [get_bd_pins bram_arbiter_0/worker3_data_in]
-  connect_bd_net -net generation_worker_2_worker_request [get_bd_pins generation_worker_2/worker_request] [get_bd_pins bram_arbiter_0/worker3_request]
-  connect_bd_net -net generation_worker_2_worker_rw [get_bd_pins generation_worker_2/worker_rw] [get_bd_pins bram_arbiter_0/worker3_rw]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins bram_arbiter_0/s00_axi_aclk] [get_bd_pins generation_worker_0/s00_axi_aclk] [get_bd_pins generation_worker_1/s00_axi_aclk] [get_bd_pins generation_worker_2/s00_axi_aclk]
+  connect_bd_net -net bram_arbiter_0_bram_data_out [get_bd_pins bram_arbiter_0/bram_data_out] [get_bd_pins generation_worker_0/bram_data] [get_bd_pins generation_worker_1/bram_data] [get_bd_pins generation_worker_2/bram_data] [get_bd_pins generation_worker_3/bram_data]
+  connect_bd_net -net generation_worker_0_bram_address [get_bd_pins generation_worker_0/bram_address] [get_bd_pins bram_arbiter_0/worker_address]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins bram_arbiter_0/s00_axi_aclk] [get_bd_pins generation_worker_0/s00_axi_aclk] [get_bd_pins generation_worker_1/s00_axi_aclk] [get_bd_pins generation_worker_2/s00_axi_aclk] [get_bd_pins generation_worker_3/s00_axi_aclk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_50M/ext_reset_in]
-  connect_bd_net -net rst_ps7_0_50M_peripheral_aresetn [get_bd_pins rst_ps7_0_50M/peripheral_aresetn] [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins bram_arbiter_0/s00_axi_aresetn] [get_bd_pins generation_worker_0/s00_axi_aresetn] [get_bd_pins generation_worker_1/s00_axi_aresetn] [get_bd_pins generation_worker_2/s00_axi_aresetn]
+  connect_bd_net -net rst_ps7_0_50M_peripheral_aresetn [get_bd_pins rst_ps7_0_50M/peripheral_aresetn] [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins bram_arbiter_0/s00_axi_aresetn] [get_bd_pins generation_worker_0/s00_axi_aresetn] [get_bd_pins generation_worker_1/s00_axi_aresetn] [get_bd_pins generation_worker_2/s00_axi_aresetn] [get_bd_pins generation_worker_3/s00_axi_aresetn]
 
   # Create address segments
   assign_bd_address -offset 0x40000000 -range 0x00002000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
@@ -626,6 +614,7 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x43C00000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs generation_worker_0/S00_AXI/S00_AXI_reg] -force
   assign_bd_address -offset 0x43C20000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs generation_worker_1/S00_AXI/S00_AXI_reg] -force
   assign_bd_address -offset 0x43C30000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs generation_worker_2/S00_AXI/S00_AXI_reg] -force
+  assign_bd_address -offset 0x43C40000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs generation_worker_3/S00_AXI/S00_AXI_reg] -force
 
 
   # Restore current instance
